@@ -14,55 +14,56 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Rider {
-  id  Int    @id @default(autoincrement())
-  uid String @unique
+model User {
+  id          Int       @id @default(autoincrement())
+  firebaseUid String    @unique
+  name        String
+  email       String    @unique
+  phone       String    @unique
+  role        Role      @default(RIDER)
 
-  name  String
-  email String @unique
-  phone String @unique
+  driverProfile DriverProfile?
+  ridesAsRider  Ride[]  @relation("RiderRides")
+  ridesAsDriver Ride[]  @relation("DriverRides")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Ride      Ride[]
 }
 
-model Driver {
-  id  Int    @id @default(autoincrement())
-  uid String @unique
-
-  name  String
-  email String @unique
-  phone String @unique
-
+model DriverProfile {
+  id            Int    @id @default(autoincrement())
+  userId        Int    @unique
   licenseNumber String @unique
   vehicleNumber String @unique
   vehicleType   String
+  status        String @default("AVAILABLE") // AVAILABLE, UNAVAILABLE, ON_TRIP
 
-  status String @default("AVAILABLE") // AVAILABLE, UNAVAILABLE, ON_TRIP
-
-  //currentLocation LatLng 
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Ride      Ride[]
+  user User @relation(fields: [userId], references: [id])
 }
+
+
 
 model Ride {
   id       Int    @id @default(autoincrement())
   riderId  Int
-  driverId Int? // this can be null when the ride is first requested
+  driverId Int? // can be null when requested
   status   String @default("REQUESTED") // REQUESTED, ACCEPTED, IN_PROGRESS, COMPLETED, CANCELLED
 
-  //pickup and dropoff locations
   pickUpLat   Float
   pickUpLong  Float
   dropOffLat  Float
   dropOffLong Float
 
-  rider  Rider   @relation(fields: [riderId], references: [id])
-  driver Driver? @relation(fields: [driverId], references: [id])
+  rider  User @relation("RiderRides", fields: [riderId], references: [id])
+  driver User? @relation("DriverRides", fields: [driverId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+
+enum Role {
+  RIDER
+  DRIVER
+  ADMIN
 }

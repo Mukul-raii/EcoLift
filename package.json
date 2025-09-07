@@ -1,19 +1,16 @@
 {
   "name": "rider",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types",
-    "migrate": "dotenv -e .env -- npx prisma migrate dev --schema packages/prisma/schema.prisma",
-    "generate": "dotenv -e .env -- npx prisma generate dev --schema packages/prisma/schema.prisma"
+    "check-types": "turbo run check-types"
   },
   "devDependencies": {
-    "dotenv-cli": "^10.0.0",
     "prettier": "^3.6.2",
-    "prisma": "^6.15.0",
     "turbo": "^2.5.6",
     "typescript": "5.9.2"
   },
@@ -26,6 +23,7 @@
     "packages/*"
   ],
   "dependencies": {
-    "@prisma/client": "^6.15.0"
+    "@prisma/client": "^6.15.0",
+    "express-http-proxy": "^2.1.1"
   }
 }

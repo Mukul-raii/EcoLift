@@ -1,6 +1,8 @@
 {
   "name": "@rider/db",
   "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev --skip-generate",
@@ -17,7 +19,8 @@
   "devDependencies": {
     "@types/node": "^20.17.47",
     "prisma": "^6.8.2",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
   },
   "dependencies": {
     "@prisma/client": "^6.8.2",
