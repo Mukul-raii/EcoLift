@@ -1,5 +1,5 @@
 {
-  "name": "@rider/rider-service",
+  "name": "@rider/notifi-service",
   "version": "0.1.0",
   "private": true,
   "main": "dist/index.js",
@@ -14,13 +14,13 @@
   "dependencies": {
     "@rider/db": "*",
     "@rider/shared": "*",
-    "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
+    "socket.io": "^4.8.1",
     "websocket": "^1.0.35"
   },
   "devDependencies": {
