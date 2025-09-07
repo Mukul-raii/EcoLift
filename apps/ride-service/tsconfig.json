@@ -4,18 +4,23 @@
     "lib": ["ES2022"],
     "module": "CommonJS",
     "outDir": "dist",
-    "rootDir": "src",
+    "rootDir": ".",
     "declaration": true,
     "declarationMap": true,
     "esModuleInterop": true,
     "strict": true,
     "skipLibCheck": true,
+    "paths": {
+      "@rider/shared/*": ["../../packages/shared/*"]
+    },
     "typeRoots": [
+      "./types",
       "../../packages/shared/Types",
       "./node_modules/@types",
       "../../node_modules/@types"
-    ]
+    ],
+    "types": ["node", "express"]
   },
-  "include": ["src/**/*"],
+  "include": ["**/*.ts", "types/**/*"],
   "exclude": ["node_modules", "dist"]
 }
