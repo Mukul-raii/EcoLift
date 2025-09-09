@@ -15,12 +15,15 @@ export function authMiddleware(
   next: NextFunction,
 ) {
   // Your authentication logic here
+  console.log('Auth middleware triggered')
   const authHeader = req.headers['authorization'] // or req.get("Authorization")
+  console.log('a  uthHeader:', authHeader)
 
   if (!authHeader) {
     return res.status(401).send('Unauthorized')
   }
   const token = authHeader.split(' ')[1]
+  console.log('token:', token)
   if (!token) {
     return res.status(401).send('Unauthorized')
   }
@@ -28,15 +31,11 @@ export function authMiddleware(
   if (!process.env.JWT_SECRET) {
     return res.status(500).send('JWT secret not configured')
   }
-
+  console.log('JWT_SECRET:', process.env.JWT_SECRET)
   try {
-    const validToken = jwt.verify(token, process.env.JWT_SECRET)
-    // If authentication is successful, call next() to proceed to the next middleware or route handler
-    if (!validToken) {
-      return res.status(401).send('Unauthorized')
-    }
-    req.user = jwt.decode(token)
-
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    console.log('Decoded Token:', decoded)
+    req.user = decoded // safe decoded payload
     next()
   } catch (error) {
     return res.status(401).send('Unauthorized')

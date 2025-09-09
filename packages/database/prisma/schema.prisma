@@ -18,8 +18,8 @@ model User {
   id          Int       @id @default(autoincrement())
   firebaseUid String    @unique
   name        String
-  email       String    @unique
-  phone       String    @unique
+  email       String    
+  phone       String?   
   role        Role      @default(RIDER)
 
   driverProfile DriverProfile?
@@ -32,29 +32,31 @@ model User {
 
 model DriverProfile {
   id            Int    @id @default(autoincrement())
-  userId        Int    @unique
+  userId        String    @unique
   licenseNumber String @unique
   vehicleNumber String @unique
   vehicleType   String
   status        String @default("AVAILABLE") // AVAILABLE, UNAVAILABLE, ON_TRIP
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [firebaseUid])
 }
 
 
 
 model Ride {
   id       Int    @id @default(autoincrement())
-  riderId  Int
+  riderId  String
   driverId Int? // can be null when requested
   status   String @default("REQUESTED") // REQUESTED, ACCEPTED, IN_PROGRESS, COMPLETED, CANCELLED
 
-  pickUpLat   Float
-  pickUpLong  Float
-  dropOffLat  Float
-  dropOffLong Float
+  fromLocation String
+  toLocation   String
+  pickUpLat   Float?
+  pickUpLong  Float?
+  dropOffLat  Float?
+  dropOffLong Float?
 
-  rider  User @relation("RiderRides", fields: [riderId], references: [id])
+  rider  User @relation("RiderRides", fields: [riderId], references: [firebaseUid])
   driver User? @relation("DriverRides", fields: [driverId], references: [id])
 
   createdAt DateTime @default(now())

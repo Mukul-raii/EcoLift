@@ -3,27 +3,25 @@ import { prisma, Role } from '@rider/db'
 import admin from 'firebase-admin'
 import { generateIdToken } from '../utils/jwtVerification'
 import { NewUser } from '../Types/userTypes'
-
-admin.initializeApp({
-  credential: admin.credential.applicationDefault(),
-})
-
+import { error } from 'console'
+import { auth } from '../utils/firebase'
 export async function authenticate(
   req: Request,
   res: Response,
   next: NextFunction,
 ) {
   const { idToken } = req.body
-  const requestPath = req.path
+  const requestPath = req.originalUrl
+  console.log('Request Path:', requestPath, idToken)
   if (!idToken) {
     return res.status(401).send('Unauthorized')
   }
   try {
-    const decoded = await admin.auth().verifyIdToken(idToken)
+    const decoded = await auth.verifyIdToken(idToken)
     // Add decoded token to request for later use
-    let user = await userExists(decoded.uid)
-    if (!user) {
-      const userRecord = await admin.auth().getUser(decoded.uid)
+    let userData = await userExists(decoded.uid)
+    if (!userData) {
+      const userRecord = await auth.getUser(decoded.uid)
       const newUserData = {
         firebaseUid: userRecord.uid,
         email: userRecord?.email || '',
@@ -33,12 +31,20 @@ export async function authenticate(
           requestPath as keyof typeof roleBasedAccess
         ] as Role,
       }
-      user = await createUser(newUserData)
+      console.log('Creating New User:', newUserData, requestPath)
+      userData = await createUser(newUserData)
     }
-    const token = generateIdToken({ userId: user?.id, role: user?.role })
+    const token = await generateIdToken({
+      userId: userData?.firebaseUid,
+      email: userData?.email,
+      role: userData?.role,
+    })
+    console.log('Generated Token:', token)
     res.setHeader('Authorization', `Bearer ${token}`)
     return res.status(201).json('User authenticated Successfully')
-  } catch {
+  } catch (error) {
+    console.log('Error in Token Verification', error)
+    console.error('Error verifying ID token')
     return res.status(401).send('Unauthorized')
   }
 }
