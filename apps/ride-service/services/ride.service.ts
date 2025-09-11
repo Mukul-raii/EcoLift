@@ -56,17 +56,35 @@ export class RideService {
   async startRide(user: resUser, data: startRide) {
     //validate data
     try {
-      await this.validateData(user, data)
+      console.log('Starting ride with data:', 'for user:', user)
+      await this.validateStartRideData(user, data)
+      console.log('validated')
 
       const ride = await this.rideRepository.createRide(data, user.firebaseUid)
-
+      console.log('Ride created:', ride)
       return ride
     } catch (error) {
       throw new ServerError('Error starting ride', error)
     }
   }
 
-  async validateData(user: resUser, data: startRide) {
+  async fetchLiveRides(user: resUser, rideId: number) {
+    try {
+      console.log('Fetching live rides for user:', user, 'and rideId:', rideId)
+      await this.validateFetchLiveRidesData(user, rideId)
+      console.log('validated')
+      const ride = await this.rideRepository.getRideById(
+        rideId,
+        user.firebaseUid,
+      )
+      console.log('Ride fetched:', ride)
+      return ride
+    } catch (error) {
+      throw new ServerError('Error fetching live rides', error)
+    }
+  }
+
+  async validateStartRideData(user: resUser, data: startRide) {
     if (!user || user.role !== 'RIDER') {
       errorLogger('User not authenticated or not a rider')
       throw new AuthenticationError(
@@ -78,6 +96,21 @@ export class RideService {
     if (!data.from || !data.to) {
       errorLogger('Pickup and dropoff locations are required')
       throw new Error('Pickup and dropoff locations are required')
+    }
+  }
+
+  async validateFetchLiveRidesData(user: resUser, rideId: number) {
+    if (!user || user.role !== 'RIDER') {
+      errorLogger('User not authenticated or not a rider')
+      throw new AuthenticationError(
+        'User not authenticated or not a rider',
+        AUTH_ERRORS.USER_NOT_FOUND,
+        401,
+      )
+    }
+    if (!rideId) {
+      errorLogger('Ride ID is required')
+      throw new Error('Ride ID is required')
     }
   }
 }

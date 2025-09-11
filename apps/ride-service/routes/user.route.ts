@@ -5,6 +5,7 @@ import { userProfile } from '../controllers/user.controller'
 const router = Router()
 const authController = new AuthController()
 const userController = new userProfile()
+
 router.post('/auth/verify', authController.authenticate)
 router.get('/profile', authMiddleware, userController.getUserProfile)
 

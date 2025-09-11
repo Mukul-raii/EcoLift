@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express'
 import { prisma, Role } from '@rider/db'
 import admin from 'firebase-admin'
-import { generateAuthToken, generateIdToken } from '../utils/jwtVerification'
-import { NewUser, User } from '../Types/userTypes'
+import { generateAuthToken } from '../utils/jwtVerification'
+import { User } from '../Types/userTypes'
 import { error } from 'console'
 import { auth } from '../utils/firebase'
 import {

@@ -2,6 +2,7 @@ import express from 'express'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 import { findAvailableDriver } from '@rider/shared'
+import { prisma, Ride } from '@rider/db'
 
 const app = express()
 const httpServer = createServer(app)
@@ -44,12 +45,19 @@ io.on('connection', (socket) => {
 
     // Assign driver and mark unavailable
     availableDriver.status = 'AVAILABLE'
-    const ride = {
+    const ride: Ride = {
       ...rideData,
-      driverId: availableDriver.id,
+      driverId: availableDriver.userId,
       status: 'assigned',
-      rideId: `ride_${Date.now()}`,
     }
+    prisma.ride.update({
+      where: { id: ride.id },
+      data: { status: 'ASSIGNED', driverId: availableDriver.userId },
+    })
+    prisma.driverProfile.update({
+      where: { userId: availableDriver.userId },
+      data: { status: 'UNAVAILABLE' },
+    })
     rides.push(ride)
 
     console.log('Ride assigned:', ride)

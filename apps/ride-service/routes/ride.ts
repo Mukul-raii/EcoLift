@@ -6,5 +6,6 @@ const router = Router()
 const rideController = new RideController()
 
 router.post('/find-ride', authMiddleware, rideController.findRide)
+router.get('/live-rides/:rideId', authMiddleware, rideController.fetchLiveRides)
 
 export default router

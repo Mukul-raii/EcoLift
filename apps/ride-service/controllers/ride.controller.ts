@@ -25,13 +25,33 @@ export class RideController {
       dropoffLong,
     }
 
+    console.log('findRide called with data:', data)
     try {
       const result = await this.rideService.startRide(user, data)
       logger('Ride started successfully:', result)
-      return successResponse(res, 'Ride started successfully', result, 200)
+      return successResponse(res, result, 'Ride started successfully', 200)
     } catch (error) {
       errorLogger('Error starting ride:', error)
       throw new ServerError('Error starting ride', error)
+    }
+  }
+
+  fetchLiveRides = async (req: Request, res: Response): Promise<Response> => {
+    const user = req.user
+    const { rideId } = req.params
+    try {
+      console.log('fetchLiveRides called with rideId:', rideId)
+      const result = await this.rideService.fetchLiveRides(user, Number(rideId))
+      logger('Live rides fetched successfully:', result)
+      return successResponse(
+        res,
+        result,
+        'Live rides fetched successfully',
+        200,
+      )
+    } catch (error) {
+      errorLogger('Error fetching live rides:', error)
+      throw new ServerError('Error fetching live rides', error)
     }
   }
 }

@@ -12,6 +12,7 @@ export class userProfile {
     const user = req.user
 
     const result = await this.userService.getUserProfile(user.firebaseUid)
+    console.log('Profile fetched:', result)
     return successResponse(res, result, 'Profile Fetched Successfull', 200)
   }
 }

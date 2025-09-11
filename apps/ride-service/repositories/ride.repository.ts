@@ -23,4 +23,15 @@ export class RideRepository {
       throw new DatabaseError('Error creating ride', error)
     }
   }
+
+  async getRideById(rideId: number, userId: string): Promise<Ride | null> {
+    try {
+      return await prisma.ride.findUnique({
+        where: { id: rideId, riderId: userId },
+      })
+    } catch (error) {
+      logger('Error fetching ride by ID:', error)
+      throw new DatabaseError('Error fetching ride by ID', error)
+    }
+  }
 }

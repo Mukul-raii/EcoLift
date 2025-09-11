@@ -39,6 +39,7 @@ export function authMiddleware(
       return errorResponse(res, 'Invalid Token ', 401, 'TOKEN_EXPIRED')
     }
     req.user = decoded
+    console.log('Authenticated user:', req.user)
     next()
   } catch (error) {
     return errorResponse(res, 'Interal server error', 404, 'SERVER_ERROR')
