@@ -2,7 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import 'dotenv/config'
-import userAuth from './routes/authUser'
+import userAuth from './routes/user.route'
 import ride from './routes/ride'
 const app = express()
 
@@ -17,7 +17,7 @@ app.use(
   }),
 )
 app.use(
-  '/api/v1/rider',
+  '/api/v1/rider/user',
   (req, res, next) => {
     console.log('Hit rider route')
     next()
@@ -26,9 +26,9 @@ app.use(
 )
 
 app.use(
-  '/api/v1/ride',
+  '/api/v1/rider/ride',
   (req, res, next) => {
-    console.log('Hit ride route')
+    console.log('Hit rider route')
     next()
   },
   ride,

@@ -11,3 +11,12 @@ export interface User {
   updatedAt?: Date
   lastLogin?: Date
 }
+
+export interface resUser {
+  id: string
+  firebaseUid: string
+  role: string
+  name: string
+  email: string
+  phone: string
+}
