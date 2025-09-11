@@ -5,16 +5,25 @@ import 'dotenv/config'
 import userAuth from './routes/authUser'
 
 const app = express()
+app.get('/ping', (req, res) => res.json({ msg: 'pong' }))
 
 app.use(cookieParser())
 app.use(express.json())
-app.use(cors())
+app.use(
+  cors({
+    origin: [
+      'http://localhost:37921', // Flutter web dev server
+    ], // allow all origins
+    credentials: true,
+    exposedHeaders: ['Authorization'],
+  }),
+)
 
-app.use('api/v1/driver', userAuth)
+app.use('/api/v1/driver', userAuth)
 
 app.use('/', () => {
   console.log('Ride service up and running')
 })
-app.listen(8002, () => {
-  console.log('Ride service listening on port 8002')
+app.listen(8003, () => {
+  console.log('Ride service listening on port 8003')
 })

@@ -28,6 +28,7 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  lastLogin DateTime 
 }
 
 model DriverProfile {
@@ -46,7 +47,7 @@ model DriverProfile {
 model Ride {
   id       Int    @id @default(autoincrement())
   riderId  String
-  driverId Int? // can be null when requested
+  driverId String? // can be null when requested
   status   String @default("REQUESTED") // REQUESTED, ACCEPTED, IN_PROGRESS, COMPLETED, CANCELLED
 
   fromLocation String
@@ -57,7 +58,7 @@ model Ride {
   dropOffLong Float?
 
   rider  User @relation("RiderRides", fields: [riderId], references: [firebaseUid])
-  driver User? @relation("DriverRides", fields: [driverId], references: [id])
+  driver User? @relation("DriverRides", fields: [driverId], references: [firebaseUid])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

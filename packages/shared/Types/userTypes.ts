@@ -1,9 +1,13 @@
 import { Role } from '@rider/db'
 
-export interface NewUser {
+export interface User {
+  id?: number
   firebaseUid: string
-  email: string
   name: string
-  phone: string
+  email: string
+  phone?: string | null
   role: Role
+  createdAt?: Date
+  updatedAt?: Date
+  lastLogin?: Date
 }

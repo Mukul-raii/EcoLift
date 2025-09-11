@@ -1,7 +1,10 @@
 import 'dotenv/config'
 
-console.log('JWT_SECRET = share d', process.env.JWT_SECRET)
-export * from './middleware/auth'
+export * from './controller/auth'
 export * from './utils/jwtVerification'
 export * from './middleware/authMiddleware'
 export * from './utils/riderSearch'
+export * from './repositories/user.repository'
+export * from './services/AuthController.service'
+export * from './errors/auth.error'
+export * from './utils/respose'

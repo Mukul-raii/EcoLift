@@ -34,6 +34,7 @@ io.on('connection', (socket) => {
 
     // Find first available driver
     const availableDriver = await findAvailableDriver(rideData)
+    console.log('Available driver found:', availableDriver)
     if (!availableDriver) {
       return io.to(`rider:${rideData.riderId}`).emit('rideUpdate', {
         status: 'no_driver',
@@ -51,6 +52,7 @@ io.on('connection', (socket) => {
     }
     rides.push(ride)
 
+    console.log('Ride assigned:', ride)
     // Emit updates to rider and driver rooms
     io.to(`driver:${availableDriver.userId}`).emit('newRide', ride)
     io.to(`rider:${rideData.riderId}`).emit('rideUpdate', ride)

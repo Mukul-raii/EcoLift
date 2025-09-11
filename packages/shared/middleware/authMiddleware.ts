@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
+import { errorResponse } from '../utils/respose'
 
 declare global {
   namespace Express {
@@ -14,30 +15,38 @@ export function authMiddleware(
   res: Response,
   next: NextFunction,
 ) {
-  // Your authentication logic here
-  console.log('Auth middleware triggered')
   const authHeader = req.headers['authorization'] // or req.get("Authorization")
-  console.log('a  uthHeader:', authHeader)
-
+  console.log('Auth Header:', authHeader)
   if (!authHeader) {
-    return res.status(401).send('Unauthorized')
+    return errorResponse(res, 'Missing authorization', 401, 'TOKEN_MISSING')
   }
   const token = authHeader.split(' ')[1]
-  console.log('token:', token)
-  if (!token) {
-    return res.status(401).send('Unauthorized')
-  }
+  console.log('Extracted Token:', token)
 
-  if (!process.env.JWT_SECRET) {
-    return res.status(500).send('JWT secret not configured')
+  if (!token) {
+    return errorResponse(res, 'Mising Token ', 401, 'TOKEN_MISSING')
   }
-  console.log('JWT_SECRET:', process.env.JWT_SECRET)
+  console.log('JWT Secret:', process.env.JWT_SECRET)
+  if (!process.env.JWT_SECRET) {
+    return errorResponse(
+      res,
+      'Internal Server Error Security Token Not Found',
+      500,
+      'SERVER_ERROR',
+    )
+  }
   try {
+    console.log('Verifying JWT Token...')
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    if (!decoded) {
+      console.log('Decoded token is null or undefined')
+      return errorResponse(res, 'Invalid Token ', 401, 'TOKEN_EXPIRED')
+    }
     console.log('Decoded Token:', decoded)
-    req.user = decoded // safe decoded payload
+    req.user = decoded
     next()
   } catch (error) {
-    return res.status(401).send('Unauthorized')
+    console.error('JWT Verification Error:', error)
+    return errorResponse(res, 'Interal server error', 404, 'SERVER_ERROR')
   }
 }
