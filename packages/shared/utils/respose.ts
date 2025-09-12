@@ -36,9 +36,9 @@ export const responseHandler = <T>(
 
 export const successResponse = <T>(
   res: Response,
-  data: T,
-  message = 'Success',
   code = 200,
+  message: any,
+  data: T,
 ): Promise<Response> => {
   return responseHandler(res, {
     success: true,
@@ -48,11 +48,11 @@ export const successResponse = <T>(
   })
 }
 
-export const errorResponse = (
+export const errorResponse = <T>(
   res: Response,
   message = 'Error',
   code = 500,
-  error: string | null = null,
+  error: any,
 ): Promise<Response> => {
   return responseHandler(res, {
     success: false,

@@ -16,4 +16,20 @@ export class userService {
       throw new ServerError('Error fetching user profile', error)
     }
   }
+
+  async updateUserProfile(
+    userId: string,
+    updateData: Partial<User>,
+  ): Promise<User | null> {
+    try {
+      const updatedUser = await this.userRepositoty.updateUserProfile(
+        userId,
+        updateData,
+      )
+      return updatedUser
+    } catch (error) {
+      errorLogger('Error updating user profile', { error })
+      throw new ServerError('Error updating user profile', error)
+    }
+  }
 }

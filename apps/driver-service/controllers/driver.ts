@@ -40,4 +40,22 @@ export class driverProfileController {
       return errorResponse(res, 'Error updating driver status', 500, error)
     }
   }
+
+  updateDriverProfile = async (
+    req: Request,
+    res: Response,
+  ): Promise<Response> => {
+    const user = req.user
+    const updateData = req.body
+    try {
+      const result = await this.driverService.updateDriverProfile(
+        user.firebaseUid,
+        updateData,
+      )
+      return res.status(200).json({ message: 'Profile updated', result })
+    } catch (error) {
+      errorLogger('Error in driverProfileController.updateDriverProfile', error)
+      return errorResponse(res, 'Error updating driver profile', 500, error)
+    }
+  }
 }

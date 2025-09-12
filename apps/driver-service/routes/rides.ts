@@ -1,8 +1,11 @@
 import { authMiddleware } from '@rider/shared'
 import { Router } from 'express'
-import { driverRides } from '../controllers/rider'
+import { RideController } from '../controllers/ride.controller'
 
 const router = Router()
+const driverController = new RideController()
 
-router.get('/rides', authMiddleware, driverRides)
+router.get('/live-ride', authMiddleware, driverController.getDriverLiveRide)
+router.get('/rides', authMiddleware, driverController.getdriverRides)
+
 export default router

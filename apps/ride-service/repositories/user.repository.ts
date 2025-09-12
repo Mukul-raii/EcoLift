@@ -13,4 +13,20 @@ export class UserRepository {
       throw new DatabaseError('Error fetching user profile', error)
     }
   }
+
+  async updateUserProfile(
+    userId: string,
+    updateData: Partial<User>,
+  ): Promise<User | null> {
+    try {
+      const result = await prisma.user.update({
+        where: { firebaseUid: userId },
+        data: updateData,
+      })
+      return result
+    } catch (error) {
+      errorLogger('Error updating user profile', { error })
+      throw new DatabaseError('Error updating user profile', error)
+    }
+  }
 }

@@ -15,4 +15,18 @@ export class userProfile {
     console.log('Profile fetched:', result)
     return successResponse(res, result, 'Profile Fetched Successfull', 200)
   }
+
+  updateUserProfile = async (
+    req: Request,
+    res: Response,
+  ): Promise<Response> => {
+    const user = req.user
+    const updateData = req.body
+    const result = await this.userService.updateUserProfile(
+      user.firebaseUid,
+      updateData,
+    )
+    console.log('Profile updated:', result)
+    return successResponse(res, result, 'Profile Updated Successfully', 200)
+  }
 }

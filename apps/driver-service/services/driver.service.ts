@@ -1,4 +1,4 @@
-import { prisma } from '@rider/db'
+import { prisma, User } from '@rider/db'
 import { DriverRepository } from '../repositories/driver.repository'
 import { errorLogger, logger, ServerError } from '@rider/shared/dist'
 
@@ -25,6 +25,22 @@ export class DriverService {
     } catch (error) {
       errorLogger('Error in DriverService.changeDriverStatus', error)
       throw new ServerError('Error updating driver status', error)
+    }
+  }
+
+  async updateDriverProfile(
+    firebaseUid: string,
+    updateData: Partial<User>,
+  ): Promise<User | null> {
+    try {
+      const result = await this.driverRepository.updateDriverProfile(
+        firebaseUid,
+        updateData,
+      )
+      return result
+    } catch (error) {
+      errorLogger('Error in DriverService.updateDriverProfile', error)
+      throw new ServerError('Error updating driver profile', error)
     }
   }
 }
