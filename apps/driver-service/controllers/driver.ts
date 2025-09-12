@@ -1,34 +1,43 @@
 import { Request, Response } from 'express'
-import { getUserProfile, updateStatus } from '../services/driver'
+import { DriverService } from '../services/driver.service'
+import { errorLogger, errorResponse, ServerError } from '@rider/shared/dist'
 
-export const userProfile = async (req: Request, res: Response) => {
-  const user = req.user
-  if (!user) {
-    return res.status(400).json({ message: 'User not authenticated' })
+export class driverProfileController {
+  private driverService: DriverService
+  constructor() {
+    this.driverService = new DriverService()
   }
-  try {
-    const profile = await getUserProfile(user.firebaseUid)
-    return res.status(200).json({ profile })
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ message: 'Error fetching user profile', error })
+  // get driver profile
+  fetchDriverProfile = async (
+    req: Request,
+    res: Response,
+  ): Promise<Response> => {
+    const user = req.user
+    try {
+      const result = await this.driverService.fetchDriverProfile(
+        user.firebaseUid,
+      )
+      return res.status(200).json({ profile: result })
+    } catch (error) {
+      errorLogger('Error in driverProfileController.fetchDriverProfile', error)
+      return errorResponse(res, 'Error fetching driver profile', 500, error)
+    }
   }
-}
-
-export const updateDriverStatus = async (req: Request, res: Response) => {
-  const user = req.user
-  const { status } = req.query
-  if (!user) {
-    return res.status(400).json({ message: 'User not authenticated' })
-  }
-  if (!status || (status !== 'active' && status !== 'inactive')) {
-    return res.status(400).json({ message: 'Invalid status value' })
-  }
-  try {
-    const result = await updateStatus(user.id, status as 'active' | 'inactive')
-    return res.status(200).json({ message: 'Status updated', result })
-  } catch (error) {
-    return res.status(500).json({ message: 'Error updating status', error })
+  // change driver status
+  changeDriverStatus = async (
+    req: Request,
+    res: Response,
+  ): Promise<Response> => {
+    const user = req.user
+    const { status } = req.query
+    try {
+      const result = await this.driverService.changeDriverStatus(
+        user.id,
+        status as 'active' | 'inactive',
+      )
+      return res.status(200).json({ message: 'Status updated', result })
+    } catch (error) {
+      return errorResponse(res, 'Error updating driver status', 500, error)
+    }
   }
 }

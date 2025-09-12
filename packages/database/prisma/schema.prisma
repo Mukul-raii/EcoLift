@@ -37,18 +37,16 @@ model DriverProfile {
   licenseNumber String @unique
   vehicleNumber String @unique
   vehicleType   String
-  status        String @default("AVAILABLE") // AVAILABLE, UNAVAILABLE, ON_TRIP
+  status        DriverStatus @default(UNAVAILABLE)
 
   user User @relation(fields: [userId], references: [firebaseUid])
 }
-
-
 
 model Ride {
   id       Int    @id @default(autoincrement())
   riderId  String
   driverId String? // can be null when requested
-  status   String @default("REQUESTED") // REQUESTED, ACCEPTED, IN_PROGRESS, COMPLETED, CANCELLED
+  status  RideStatus @default(REQUESTED)
 
   fromLocation String
   toLocation   String
@@ -69,4 +67,18 @@ enum Role {
   RIDER
   DRIVER
   ADMIN
+}
+
+enum DriverStatus {
+  AVAILABLE
+  UNAVAILABLE
+  ON_TRIP
+}
+
+enum RideStatus {
+  REQUESTED
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
 }
