@@ -10,7 +10,7 @@ export class RideRepository {
         data: {
           fromLocation: rideData.from,
           toLocation: rideData.to,
-          status: 'REQUESTED',
+          status: 'PENDING',
           pickUpLat: rideData?.pickupLat,
           pickUpLong: rideData?.pickupLong,
           dropOffLat: rideData?.dropoffLat,

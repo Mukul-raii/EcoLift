@@ -10,3 +10,10 @@ export const findAvailableDriver = async (rideRequest: any) => {
   })
   return res
 }
+
+/* export const updateDriverStatus = async (driverId: string, status: string) => {
+  await prisma.driverProfile.update({
+    where: { userId: driverId },
+    data: { status },
+  })
+} */

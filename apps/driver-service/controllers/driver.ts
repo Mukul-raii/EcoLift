@@ -20,7 +20,7 @@ export class driverProfileController {
       return res.status(200).json({ profile: result })
     } catch (error) {
       errorLogger('Error in driverProfileController.fetchDriverProfile', error)
-      return errorResponse(res, 'Error fetching driver profile', 500, error)
+      return errorResponse(res, 500, 'Error fetching driver profile', error)
     }
   }
   // change driver status
@@ -37,7 +37,7 @@ export class driverProfileController {
       )
       return res.status(200).json({ message: 'Status updated', result })
     } catch (error) {
-      return errorResponse(res, 'Error updating driver status', 500, error)
+      return errorResponse(res, 500, 'Error updating driver status', error)
     }
   }
 
@@ -55,7 +55,7 @@ export class driverProfileController {
       return res.status(200).json({ message: 'Profile updated', result })
     } catch (error) {
       errorLogger('Error in driverProfileController.updateDriverProfile', error)
-      return errorResponse(res, 'Error updating driver profile', 500, error)
+      return errorResponse(res, 500, 'Error updating driver profile', error)
     }
   }
 }

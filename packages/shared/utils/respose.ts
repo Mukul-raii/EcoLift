@@ -23,7 +23,7 @@ export const responseHandler = <T>(
     error?: string | null
     data?: T | null
   },
-): Promise<Response> => {
+): Response => {
   const payload: ApiResponse<T> = {
     success,
     code,
@@ -39,7 +39,7 @@ export const successResponse = <T>(
   code = 200,
   message: any,
   data: T,
-): Promise<Response> => {
+): Response => {
   return responseHandler(res, {
     success: true,
     code,
@@ -50,10 +50,10 @@ export const successResponse = <T>(
 
 export const errorResponse = <T>(
   res: Response,
-  message = 'Error',
   code = 500,
+  message = 'Error',
   error: any,
-): Promise<Response> => {
+): Response => {
   return responseHandler(res, {
     success: false,
     code,

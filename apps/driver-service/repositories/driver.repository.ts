@@ -1,4 +1,4 @@
-import { prisma, User } from '@rider/db'
+import { DriverStatus, prisma, User } from '@rider/db'
 import { DatabaseError, errorLogger } from '@rider/shared/dist'
 
 export class DriverRepository {
@@ -15,12 +15,12 @@ export class DriverRepository {
     }
   }
 
-  async updateDriverStatus(userId: number, status: 'active' | 'inactive') {
+  async updateDriverStatus(userId: number, status: DriverStatus) {
     // logic to update driver status in database
     try {
       const result = await prisma.driverProfile.update({
         where: { id: userId },
-        data: { status },
+        data: { status: status },
       })
       return result
     } catch (error) {

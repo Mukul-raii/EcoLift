@@ -3,10 +3,14 @@ import { errorLogger, errorResponse, ServerError } from '@rider/shared/dist'
 import { UserRepository } from '../repositories/user.repository'
 
 export class userService {
+  //Private property to hold instance of UserRepository
   private userRepositoty: UserRepository
+
+  //Constructor for getting instance of UserRepository
   constructor() {
     this.userRepositoty = new UserRepository()
   }
+
   async getUserProfile(userId: string): Promise<User | null> {
     try {
       const user = await this.userRepositoty.getUserProfile(userId)

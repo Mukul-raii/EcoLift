@@ -14,6 +14,6 @@ export const AUTH_ERRORS = {
 // constants/auth.constants.ts
 export const ROLE_MAPPINGS = {
   '/api/v1/rider/user/auth/verify': Role.RIDER,
-  '/api/v1/driver/user/auth/verify': Role.DRIVER,
+  '/api/v1/driver/auth/verify': Role.DRIVER,
   '/api/v1/admin/user/auth/verify': Role.ADMIN,
 } as const

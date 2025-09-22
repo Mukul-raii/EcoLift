@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { getUserProfile, userService } from '../services/User.service'
+import { userService } from '../services/User.service'
 import { successResponse } from '@rider/shared/dist'
 
 export class userProfile {
@@ -8,12 +8,12 @@ export class userProfile {
   constructor() {
     this.userService = new userService()
   }
+
   getUserProfile = async (req: Request, res: Response): Promise<Response> => {
     const user = req.user
-
     const result = await this.userService.getUserProfile(user.firebaseUid)
     console.log('Profile fetched:', result)
-    return successResponse(res, result, 'Profile Fetched Successfull', 200)
+    return successResponse(res, 200, 'Profile Fetched Successfull', result)
   }
 
   updateUserProfile = async (
@@ -27,6 +27,6 @@ export class userProfile {
       updateData,
     )
     console.log('Profile updated:', result)
-    return successResponse(res, result, 'Profile Updated Successfully', 200)
+    return successResponse(res, 200, 'Profile Updated Successfully', result)
   }
 }

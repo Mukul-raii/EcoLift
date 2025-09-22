@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
 import { prisma, Role } from '@rider/db'
-import admin from 'firebase-admin'
 import { generateAuthToken } from '../utils/jwtVerification'
 import { User } from '../Types/userTypes'
 import { error } from 'console'
@@ -19,7 +18,7 @@ export async function authenticate(req: Request, res: Response) {
   const requestPath = req.originalUrl
 
   if (!idToken) {
-    return errorResponse(res, 'No token provided', 400)
+    return errorResponse(res, 400, 'No token provided', null)
   }
 
   try {
@@ -47,14 +46,12 @@ export async function authenticate(req: Request, res: Response) {
     })
     console.log('Generated Auth Token:', token)
     res.setHeader('Authorization', `Bearer ${token}`)
-    return successResponse(
-      res,
-      { token, user: userData },
-      'Authentication successful',
-      200,
-    )
+    return successResponse(res, 200, 'Authentication successful', {
+      token,
+      user: userData,
+    })
   } catch (error) {
-    return errorResponse(res, 'Authentication failed', 401, 'Not Authorized')
+    return errorResponse(res, 401, 'Authentication failed', 'Not Authorized')
   }
 }
 
@@ -101,6 +98,6 @@ export class AuthController {
 
     const result = await this.authService.authentication(idToken, requestPath)
     res.setHeader('Authorization', `Bearer ${result.token}`)
-    return successResponse(res, result, 'Authentication Successfull', 200)
+    return successResponse(res, 200, 'Authentication Successfull', result)
   }
 }

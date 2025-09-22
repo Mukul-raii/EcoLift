@@ -8,7 +8,7 @@ const router = Router()
 const authController = new AuthController()
 const userProfile = new driverProfileController()
 
-router.post('/auth', authController.authenticate)
+router.post('/auth/verify', authController.authenticate)
 router.get('/profile', authMiddleware, userProfile.fetchDriverProfile)
 router.patch('/profile', authMiddleware, userProfile.updateDriverProfile)
 router.patch('/status', authMiddleware, userProfile.changeDriverStatus)

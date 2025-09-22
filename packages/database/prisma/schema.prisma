@@ -76,9 +76,12 @@ enum DriverStatus {
 }
 
 enum RideStatus {
+  PENDING
   REQUESTED
   ACCEPTED
+  REJECTED
   IN_PROGRESS
   COMPLETED
   CANCELLED
+  ASSIGNED
 }

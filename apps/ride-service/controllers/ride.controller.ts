@@ -29,7 +29,7 @@ export class RideController {
     try {
       const result = await this.rideService.startRide(user, data)
       logger('Ride started successfully:', result)
-      return successResponse(res, result, 'Ride started successfully', 200)
+      return successResponse(res, 200, 'Ride started successfully', result)
     } catch (error) {
       errorLogger('Error starting ride:', error)
       throw new ServerError('Error starting ride', error)
@@ -45,9 +45,9 @@ export class RideController {
       logger('Live rides fetched successfully:', result)
       return successResponse(
         res,
-        result,
-        'Live rides fetched successfully',
         200,
+        'Live rides fetched successfully',
+        result,
       )
     } catch (error) {
       errorLogger('Error fetching live rides:', error)

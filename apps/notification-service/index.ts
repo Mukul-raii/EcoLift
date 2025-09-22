@@ -1,8 +1,8 @@
 import express from 'express'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
-import { findAvailableDriver } from '@rider/shared'
-import { prisma, Ride } from '@rider/db'
+import { Ride } from '@rider/db'
+import { RideService } from './services/Ride.service'
 
 const app = express()
 const httpServer = createServer(app)
@@ -14,8 +14,6 @@ const io = new Server(httpServer, {
 })
 
 io.on('connection', (socket) => {
-  console.log('Client connected:', socket.id)
-
   // Driver joins their room
   socket.on('joinDriverRoom', (driverId: string) => {
     socket.join(`driver:${driverId}`)
@@ -30,40 +28,19 @@ io.on('connection', (socket) => {
   })
 
   //Rider requesting a ride
-  socket.on('rideRequest', async (rideData: any) => {
-    console.log('Ride request received:', rideData)
+  socket.on('rideRequest', async (rideData: Partial<Ride>) => {
+    const rideService = new RideService()
+    const { driver, updateRide } = await rideService.requestRide(rideData, io)
 
-    // Find first available driver
-    const availableDriver = await findAvailableDriver(rideData)
-    console.log('Available driver found:', availableDriver)
-    if (!availableDriver) {
-      return io.to(`rider:${rideData.riderId}`).emit('rideUpdate', {
-        status: 'no_driver',
-      })
-    }
-    const rides: any[] = []
-
-    // Assign driver and mark unavailable
-    availableDriver.status = 'AVAILABLE'
-    const ride: Ride = {
-      ...rideData,
-      driverId: availableDriver.userId,
-      status: 'assigned',
-    }
-    prisma.ride.update({
-      where: { id: ride.id },
-      data: { status: 'ASSIGNED', driverId: availableDriver.userId },
-    })
-    prisma.driverProfile.update({
-      where: { userId: availableDriver.userId },
-      data: { status: 'UNAVAILABLE' },
-    })
-    rides.push(ride)
-
-    console.log('Ride assigned:', ride)
+    console.log('Ride assigned:', updateRide)
     // Emit updates to rider and driver rooms
-    io.to(`driver:${availableDriver.userId}`).emit('newRide', ride)
-    io.to(`rider:${rideData.riderId}`).emit('rideUpdate', ride)
+    io.to(`driver:${driver.userId}`).emit('newRide', updateRide)
+    io.to(`rider:${updateRide.riderId}`).emit('rideUpdate', updateRide)
+  })
+
+  socket.on('getRideStatus', async (rideData: string) => {
+    const rideService = new RideService()
+    const updateRide = await rideService.updateRideStatus(rideData, io)
   })
 })
 
