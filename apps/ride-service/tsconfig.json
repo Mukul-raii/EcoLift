@@ -21,6 +21,6 @@
     ],
     "types": ["node", "express"]
   },
-  "include": ["**/*.ts", "types/**/*"],
+  "include": ["**/*.ts", "types/**/*", "../../packages/shared/*"],
   "exclude": ["node_modules", "dist"]
 }

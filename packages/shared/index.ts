@@ -8,3 +8,5 @@ export * from './repositories/user.repository'
 export * from './services/AuthController.service'
 export * from './errors/auth.error'
 export * from './utils/respose'
+
+export * from './services/redis'

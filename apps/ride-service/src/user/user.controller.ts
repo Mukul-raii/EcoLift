@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
-import { userService } from '../services/User.service'
 import { successResponse } from '@rider/shared/dist'
+import { userService } from './User.service'
 
 export class userProfile {
   private userService: userService

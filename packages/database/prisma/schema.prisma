@@ -54,6 +54,7 @@ model Ride {
   pickUpLong  Float?
   dropOffLat  Float?
   dropOffLong Float?
+  otp        String? // can be null when ride is completed or cancelled
 
   rider  User @relation("RiderRides", fields: [riderId], references: [firebaseUid])
   driver User? @relation("DriverRides", fields: [driverId], references: [firebaseUid])

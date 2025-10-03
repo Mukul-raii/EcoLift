@@ -1,4 +1,4 @@
-import { prisma } from '@rider/db'
+import { prisma, Ride } from '@rider/db'
 import {
   AuthenticationError,
   errorLogger,
@@ -6,7 +6,8 @@ import {
 } from '@rider/shared/dist'
 import { AUTH_ERRORS } from '@rider/shared/dist/constants/auth.constant'
 import { resUser } from '@rider/shared/dist/Types/userTypes'
-import { RideRepository } from '../repositories/ride.repository'
+import { RideRepository } from './ride.repository'
+import { RideQueue } from './ride.queue'
 
 export const startRide = async (
   from: string,
@@ -48,9 +49,11 @@ interface startRide {
 
 export class RideService {
   private rideRepository: RideRepository
+  private rideQueue: RideQueue
 
   constructor() {
     this.rideRepository = new RideRepository()
+    this.rideQueue = new RideQueue()
   }
 
   async startRide(user: resUser, data: startRide) {
@@ -68,15 +71,12 @@ export class RideService {
     }
   }
 
-  async fetchLiveRides(user: resUser, rideId: number) {
+  async fetchLiveRides(user: resUser) {
     try {
-      console.log('Fetching live rides for user:', user, 'and rideId:', rideId)
-      await this.validateFetchLiveRidesData(user, rideId)
+      console.log('Fetching live rides for user:', user, 'and rideId:')
+      await this.validateFetchLiveRidesData(user)
       console.log('validated')
-      const ride = await this.rideRepository.getRideById(
-        rideId,
-        user.firebaseUid,
-      )
+      const ride = await this.rideRepository.getRideById(user.firebaseUid)
       console.log('Ride fetched:', ride)
       return ride
     } catch (error) {
@@ -99,7 +99,7 @@ export class RideService {
     }
   }
 
-  async validateFetchLiveRidesData(user: resUser, rideId: number) {
+  async validateFetchLiveRidesData(user: resUser) {
     if (!user || user.role !== 'RIDER') {
       errorLogger('User not authenticated or not a rider')
       throw new AuthenticationError(
@@ -108,9 +108,46 @@ export class RideService {
         401,
       )
     }
-    if (!rideId) {
-      errorLogger('Ride ID is required')
-      throw new Error('Ride ID is required')
+  }
+
+  async findRide(rideData: Partial<Ride>): Promise<Ride> {
+    try {
+      const ride = await this.rideRepository.findRide(rideData)
+      if (!ride) {
+        throw new ServerError('Error creating ride', 'Ride creation failed')
+      }
+      return ride
+    } catch (error) {
+      throw new ServerError('Error creating ride', error)
+    }
+  }
+
+  async findDriver() {
+    // Find first available driver
+    const result = await this.rideRepository.findAvailableDriver()
+    // No driver available
+    if (!result) {
+      return null
+    }
+    return result
+  }
+
+  async updateRide(rideData: Ride): Promise<Ride> {
+    try {
+      const updateRide = await this.rideRepository.updateRide(rideData)
+      return updateRide
+    } catch (error) {
+      throw new ServerError('Error updating ride', error)
+    }
+  }
+
+  async updateRideAndDriver(updateData: Partial<Ride>) {
+    try {
+      const updateRide =
+        await this.rideRepository.updateRideAndDriver(updateData)
+      return updateRide
+    } catch (error) {
+      throw new ServerError('Error updating ride', error)
     }
   }
 }

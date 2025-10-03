@@ -2,6 +2,7 @@ import { errorLogger, logger, ServerError } from '@rider/shared'
 import { RideController } from '../controller/Rider.controller'
 import { RideRepository } from '../repositories/ride.repository'
 import { DriverProfile, Ride } from '@rider/db'
+import { authenticator } from 'otplib'
 
 export class RideService {
   private rideRepository = new RideRepository()
@@ -10,7 +11,7 @@ export class RideService {
     this.rideRepository = new RideRepository()
   }
   //main function to handle ride request
-  async requestRide(rideData: any, io: any) {
+  async requestRide(rideData: Partial<Ride>, io: any) {
     try {
       const ride = await this.findRide(rideData)
       logger('Ride requested in requestRide:', ride)
@@ -30,12 +31,16 @@ export class RideService {
       //update ride
       ride.status = 'REQUESTED'
       ride.driverId = driver.userId
+      const updateRide = await this.rideRepository.updateRide(ride)
+
       console.log('Emitting rideRequested to driver:', driver.userId)
-      io.to(`driver:${driver.userId}`).emit('rideRequested', ride)
+      io.to(`driver:${driver.userId}`).emit('rideRequested', updateRide)
+      return updateRide
     } catch (error) {
       throw new ServerError('Error requesting ride', error)
     }
   }
+
   // 1- create ride with status REQUESTED
   async findRide(rideData: Partial<Ride>): Promise<Ride> {
     try {
@@ -78,33 +83,38 @@ export class RideService {
   }
 
   //Update ride status
-  async updateRideStatus(rideData: any, io: any) {
+  async updateRideStatus(rideData: Partial<Ride>, io: any) {
     try {
       //get update ride status
       const ride = await this.rideRepository.findRide(rideData)
+      if (!ride) {
+        throw new ServerError('Ride not found', 'Ride not found')
+      }
       //check status
-      const status = await this.checkRideStatus(rideData.status)
+      const status = await this.checkRideStatus(ride?.status)
 
       if (status) {
-        const ride = {
-          ...rideData,
+        const ridedata = {
+          ...ride,
           status: 'ASSIGNED',
         }
         // update ride and driver status
         const updateRide = await this.updateRideandDriverStatus(
-          ride,
-          ride.driverId,
+          rideData,
+          rideData.driverId,
           'UNAVAILABLE',
         )
 
-        io.to(`driver:${ride.driverId}`).emit('newRide', updateRide)
-        io.to(`rider:${ride.riderId}`).emit('rideUpdate', updateRide)
-        logger('Ride assigned in requestRide:', updateRide)
+        io.to(`driver:${ridedata.driverId}`).emit('newRide', updateRide)
+        io.to(`rider:${ridedata.riderId}`).emit('rideUpdate', updateRide)
+        logger('Ride assigned in updateRideStatus:', updateRide)
+        return updateRide
       } else {
         //remove driver
         const result = await this.rideRepository.removeDriverFromRide(rideData)
-        //try to find another driver and start the ride
-        this.requestRide(result, io)
+        //try to find another driv1er and start the ride
+        const ride = await this.requestRide(result, io)
+        return ride
       }
     } catch (error) {
       errorLogger('Error updating ride:', error)

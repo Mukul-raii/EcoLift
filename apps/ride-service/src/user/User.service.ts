@@ -1,6 +1,6 @@
 import { prisma, User } from '@rider/db'
 import { errorLogger, errorResponse, ServerError } from '@rider/shared/dist'
-import { UserRepository } from '../repositories/user.repository'
+import { UserRepository } from './user.repository'
 
 export class userService {
   //Private property to hold instance of UserRepository

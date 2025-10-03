@@ -65,7 +65,7 @@ export class RideRepository {
   async updateRideAndDriver(
     updateData: Partial<Ride>,
     driverId: string,
-    status: string,
+    status: DriverStatus,
   ) {
     try {
       const result = await prisma.$transaction(async (tx) => {

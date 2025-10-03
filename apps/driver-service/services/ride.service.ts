@@ -1,7 +1,5 @@
-import { prisma } from '@rider/db'
 import { RideRepository } from '../repositories/ride.repository'
 import { errorLogger, ServerError } from '@rider/shared/dist'
-import { Server } from 'http'
 
 export class RideService {
   private rideRepository: RideRepository

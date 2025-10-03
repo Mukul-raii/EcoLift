@@ -2,16 +2,24 @@ import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import 'dotenv/config'
-import userAuth from './routes/user.route'
-import ride from './routes/ride'
+import userAuth from './src/user/user.route'
+import ride from './src/ride/ride.route'
+import { RideWorker } from './src/ride/ride.worker'
+import { notificationWorker } from './src/notification/notification.worker'
 const app = express()
 
 app.get('/ping', (req, res) => res.json({ msg: 'pong' }))
+
+const rideWorkerInstance = new RideWorker()
+const notificationInstance = new notificationWorker()
+notificationInstance.sendNotificationWorker()
+rideWorkerInstance.rideWorker()
+
 app.use(cookieParser())
 app.use(express.json())
 app.use(
   cors({
-    origin: 'http://localhost:8081', // allow all origins
+    origin: ['http://localhost:8081', 'http://localhost:39015'],
     credentials: true,
     exposedHeaders: ['Authorization'],
   }),
