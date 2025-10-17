@@ -84,6 +84,14 @@ export class RideService {
     }
   }
 
+  async getRides(user: resUser) {
+    try {
+      const rides = await this.rideRepository.getRides(user)
+      return rides
+    } catch (error) {
+      throw new ServerError('Error fetching rides', error)
+    }
+  }
   async validateStartRideData(user: resUser, data: startRide) {
     if (!user || user.role !== 'RIDER') {
       errorLogger('User not authenticated or not a rider')

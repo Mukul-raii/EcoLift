@@ -1,5 +1,6 @@
 import { DriverStatus, prisma, Ride, RideStatus } from '@rider/db'
 import { DatabaseError, errorLogger, logger } from '@rider/shared/dist'
+import { resUser } from '@rider/shared/Types/userTypes'
 
 export class RideRepository {
   // Ride repository methods would go here
@@ -34,6 +35,7 @@ export class RideRepository {
               'PENDING',
               'REQUESTED',
               'ACCEPTED',
+              'STARTED',
               'ASSIGNED',
               'IN_PROGRESS',
               'REJECTED',
@@ -47,6 +49,18 @@ export class RideRepository {
     }
   }
 
+  async getRides(user: resUser) {
+    try {
+      return await prisma.ride.findMany({
+        where: {
+          riderId: user.firebaseUid,
+        },
+      })
+    } catch (error) {
+      logger('Error fetching rides:', error)
+      throw new DatabaseError('Error fetching rides', error)
+    }
+  }
   //get id with rideData
   async findRide(rideData: Partial<Ride>): Promise<Ride | null> {
     try {

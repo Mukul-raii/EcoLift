@@ -39,6 +39,18 @@ export class RideController {
     }
   }
 
+  getRides = async (req: Request, res: Response): Promise<Response> => {
+    const user = req.user
+    try {
+      const result = await this.rideService.getRides(user)
+      logger('Rides fetched successfully:', result)
+      return successResponse(res, 200, 'Rides fetched successfully', result)
+    } catch (error) {
+      errorLogger('Error fetching rides:', error)
+      throw new ServerError('Error fetching live rides', error)
+    }
+  }
+
   fetchLiveRides = async (req: Request, res: Response): Promise<Response> => {
     const user = req.user
     try {

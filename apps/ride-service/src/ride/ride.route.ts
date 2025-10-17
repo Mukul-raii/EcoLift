@@ -7,7 +7,7 @@ const rideController = new RideController()
 
 //save a new ride
 router.post('/find-ride', authMiddleware, rideController.findRide)
-router.get('/user-rides', authMiddleware, rideController.findRide)
+router.get('/user-rides', authMiddleware, rideController.getRides)
 router.get('/live-rides', authMiddleware, rideController.fetchLiveRides)
 
 //queue
