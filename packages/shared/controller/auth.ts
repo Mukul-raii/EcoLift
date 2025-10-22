@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { prisma, Role } from '@rider/db'
 import { generateAuthToken } from '../utils/jwtVerification'
-import { User } from '../Types/userTypes'
+import { User } from '../types/user.type'
 import { error } from 'console'
 import { auth } from '../utils/firebase'
 import {
