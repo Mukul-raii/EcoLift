@@ -9,7 +9,7 @@ import { AUTH_ERRORS, ROLE_MAPPINGS } from '../constants/auth.constant'
 import { UserRepository } from '../repositories/user.repository'
 import { auth } from '../utils/firebase'
 import { Role } from '@rider/db'
-import { User } from '../Types/userTypes'
+import { User } from '../types/user.type'
 import jwt from 'jsonwebtoken'
 import { errorLogger, logger } from '../utils/respose'
 
