@@ -7,7 +7,7 @@ export class RideRepository {
   findLiveRideById = async (driverId: string): Promise<Ride[]> => {
     try {
       const result = await prisma.ride.findMany({
-        where: { driverId, status: 'ONGOING' },
+        where: { driverId, status: 'ONGOING' as RideStatus },
       })
       return result
     } catch (error) {

@@ -1,4 +1,4 @@
-import { prisma, Ride } from '@rider/db'
+import { prisma, Ride, RideStatus } from '@rider/db'
 import {
   AuthenticationError,
   DriverType,
@@ -12,6 +12,9 @@ import { RideRepository } from './ride.repository'
 import { RideQueue } from './ride.queue'
 import axios from 'axios'
 import { RideForm } from '@rider/shared/dist'
+import { tryCatch } from 'bullmq'
+import { NotificationService } from '../notification/notification.service'
+import { NotificationQueue } from '../notification/notification.queue'
 
 // export const startRide = async (
 //   from: string,
@@ -45,10 +48,12 @@ import { RideForm } from '@rider/shared/dist'
 export class RideService {
   private rideRepository: RideRepository
   private rideQueue: RideQueue
+  private notificationQueue: NotificationQueue
 
   constructor() {
     this.rideRepository = new RideRepository()
     this.rideQueue = new RideQueue()
+    this.notificationQueue = new NotificationQueue()
   }
 
   async startRide(user: resUser, data: RideForm) {
@@ -91,6 +96,7 @@ export class RideService {
       throw new ServerError('Error fetching rides', error)
     }
   }
+
   async validateStartRideData(user: resUser, data: RideForm) {
     if (!user || user.role !== 'RIDER') {
       errorLogger('User not authenticated or not a rider')
@@ -213,5 +219,35 @@ export class RideService {
   async calculatePrice(distance: number) {
     const price = distance * 0.02
     return price
+  }
+
+  async verifyOTP(rideData: Partial<Ride>, otp: number) {
+    try {
+      console.log('OTP verification started', rideData, otp)
+      const isVerified = await this.rideRepository.verifyOTP(rideData, otp)
+      if (!isVerified) {
+        throw new Error('Invalid OTP')
+      }
+      const ride = await this.rideRepository.findRide(rideData)
+      if (!ride) {
+        throw new Error('Ride not found after otp verification')
+      }
+      ride.status = RideStatus.STARTED
+      const res = await this.rideRepository.updateRide(ride)
+      //if otp is valid, update the ride status to 'confirmed'
+
+      //now update rider and driver that your ride is started
+      const notification = await this.notificationQueue.sendNotification(
+        ride.riderId,
+        ride.driverId!,
+        'rideRequested',
+        ride,
+      )
+
+      return ride
+    } catch (error) {
+      console.error(error)
+      throw new ServerError('Error creating ride', error)
+    }
   }
 }

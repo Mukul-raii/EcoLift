@@ -46,7 +46,8 @@ export class RideWorker {
                 return logger('No driver available at the moment')
               }
               ride.status = 'REQUESTED'
-              ride.driverId = driver?.userId
+              ride.driverId = driver.userId
+              console.log('Driver assigned to ride:', ride, driver)
               const updateRide = await this.rideService.updateRide(ride)
               console.log('Updated Ride in rideWorker:', updateRide)
               //send notification to the driver
@@ -62,31 +63,33 @@ export class RideWorker {
               console.log('Error processing ride-request job:', error)
               throw new ServerError('Error processing ride-request job', error)
             }
+            break
           //request and notify the driver now we need to wait for its response from notification we can create a new queues for that when driver accepts , update the ride with driver details
           case 'ride-rejected':
-            console.log('Processing ride-rejected job in rideWorker:', job.data)
-            const rideRejected = await this.rideService.findRide(job.data)
-            rideRejected.status = 'REQUESTED'
-            rideRejected.driverId = ''
-            const updateRideRejected =
-              await this.rideService.updateRide(rideRejected)
-            console.log('Updated Ride in rideWorker:', updateRideRejected)
-            //request and notify the driver now we need to wait for its response from notification we can create a new queues for that when driver accepts , update the ride with driver details
+            // console.log('Processing ride-rejected job in rideWorker:', job.data)
+            // const rideRejected = await this.rideService.findRide(job.data)
+            // rideRejected.status = 'REQUESTED'
+            // rideRejected.driverId = ''
+            // const updateRideRejected =
+            //   await this.rideService.updateRide(rideRejected)
+            // console.log('Updated Ride in rideWorker:', updateRideRejected)
+            // //request and notify the driver now we need to wait for its response from notification we can create a new queues for that when driver accepts , update the ride with driver details
 
-            /*  await this.notificationQueue.sendNotification(
-              newDriver.userId || '',
-              'Ride has been REQUESTED',
-            ) */
-            await this.rideQueue.add(
-              'ride-request',
-              { rideRejected },
-              {
-                delay: 2000,
-                attempts: 5,
-                removeOnComplete: true,
-                removeOnFail: false,
-              },
-            )
+            // /*  await this.notificationQueue.sendNotification(
+            //   newDriver.userId || '',
+            //   'Ride has been REQUESTED',
+            // ) */
+            // await this.rideQueue.add(
+            //   'ride-request',
+            //   { rideRejected },
+            //   {
+            //     delay: 2000,
+            //     attempts: 5,
+            //     removeOnComplete: true,
+            //     removeOnFail: false,
+            //   },
+            // )
+            break
 
           case 'ride-accepted':
             //gererate otp/ connect driver to the ride
@@ -101,6 +104,7 @@ export class RideWorker {
               updateRideAndDriver!,
             )
             console.log("RIDE ACCEPTED AND DRIVER'S NOTIFIED")
+            break
         }
       },
       {

@@ -1,5 +1,5 @@
 import { prisma, Prisma } from '@rider/db'
-import { User } from '../Types/userTypes'
+import { User } from '../types/user.type'
 import { DatabaseError } from '../errors/auth.error'
 import { errorLogger } from '../utils/respose'
 

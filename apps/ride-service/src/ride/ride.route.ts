@@ -17,5 +17,5 @@ router.patch('/accept-ride', authMiddleware, rideController.acceptRide)
 router.patch('/reject-ride', authMiddleware, rideController.rejectRide)
 
 router.post('/ride-prepared', authMiddleware, rideController.getRidePrepared)
-
+router.patch('/start-ride', authMiddleware, rideController.startRide)
 export default router

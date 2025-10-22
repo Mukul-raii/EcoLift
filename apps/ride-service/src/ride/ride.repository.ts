@@ -108,8 +108,9 @@ export class RideRepository {
     }
   }
 
-  async updateRide(updateData: Ride): Promise<Ride> {
+  async updateRide(updateData: Partial<Ride>): Promise<Ride> {
     try {
+      console.log('updateing ride,,,,,', updateData)
       const result = await prisma.ride.update({
         where: { id: updateData.id },
         data: updateData,
@@ -123,19 +124,24 @@ export class RideRepository {
 
   async updateRideAndDriver(updateData: Partial<Ride>) {
     try {
+      const otp = String(Math.floor(100000 + Math.random() * 900000))
+
       const result = await prisma.$transaction(async (tx) => {
         const updatedDriver = await tx.driverProfile.update({
           where: { userId: updateData.driverId!, status: 'AVAILABLE' },
           data: { status: DriverStatus.UNAVAILABLE },
         })
         if (!updatedDriver) return null
+
         const rideUpdate = await tx.ride.update({
           where: { id: updateData.id },
           data: {
             status: RideStatus.IN_PROGRESS,
             driverId: updateData.driverId,
+            otp: otp,
           },
         })
+
         console.log('Driver and ride status updated:', {
           updatedDriver,
           rideUpdate,
@@ -149,6 +155,21 @@ export class RideRepository {
     } catch (error) {
       errorLogger('Error updating driver status:', error)
       throw new DatabaseError('Error updating driver status', error)
+    }
+  }
+
+  async verifyOTP(rideData: Partial<Ride>, otp: number) {
+    try {
+      const isVerified = await prisma.ride.findUnique({
+        where: {
+          id: rideData.id,
+          otp: rideData.otp,
+        },
+      })
+      return isVerified
+    } catch (error) {
+      errorLogger('Error verifying OTP:', error)
+      throw new DatabaseError('Error verifying OTP', error)
     }
   }
 }

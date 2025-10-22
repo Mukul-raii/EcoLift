@@ -115,4 +115,18 @@ export class RideController {
       throw new ServerError('Error fetching live rides', error)
     }
   }
+  startRide = async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const { rideData, otp } = req.body as {
+        rideData: Partial<Ride>
+        otp: string
+      }
+      console.log('OTP verification started', rideData, otp)
+      const ride = await this.rideService.verifyOTP(rideData, Number(otp))
+      return successResponse(res, 200, 'Ride started successfully', {})
+    } catch (error) {
+      errorLogger('Error fetching live rides:', error)
+      throw new ServerError('Error fetching live rides', error)
+    }
+  }
 }
