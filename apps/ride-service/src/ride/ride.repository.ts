@@ -1,21 +1,23 @@
 import { DriverStatus, prisma, Ride, RideStatus } from '@rider/db'
 import { DatabaseError, errorLogger, logger } from '@rider/shared/dist'
-import { resUser } from '@rider/shared/Types/userTypes'
+
+import { RideForm } from '@rider/shared/dist'
+import { resUser, User } from '@rider/shared/dist'
 
 export class RideRepository {
   // Ride repository methods would go here
-  async createRide(rideData: any, userId: string): Promise<Ride> {
+  async createRide(rideData: RideForm, userId: string): Promise<Ride> {
     // Logic to create a ride in the database
     try {
       return await prisma.ride.create({
         data: {
-          fromLocation: rideData.from,
-          toLocation: rideData.to,
+          fromLocation: rideData.from_address,
+          toLocation: rideData.to_address,
           status: 'PENDING',
-          pickUpLat: rideData?.pickupLat,
-          pickUpLong: rideData?.pickupLong,
-          dropOffLat: rideData?.dropoffLat,
-          dropOffLong: rideData?.dropoffLong,
+          pickUpLat: Number(rideData?.from_lat),
+          pickUpLong: Number(rideData?.from_lng),
+          dropOffLat: Number(rideData?.to_lat),
+          dropOffLong: Number(rideData?.to_lng),
           riderId: userId,
         },
       })
@@ -25,7 +27,7 @@ export class RideRepository {
     }
   }
   //Get ride by userId
-  async getRideById(userId: string): Promise<Ride | null> {
+  async getRideByUserId(userId: string): Promise<Ride | null> {
     try {
       return await prisma.ride.findFirst({
         where: {
@@ -68,6 +70,21 @@ export class RideRepository {
         where: {
           id: rideData.id,
           riderId: rideData.riderId,
+        },
+      })
+    } catch (error) {
+      logger('Error fetching ride by data:', error)
+      throw new DatabaseError('Error fetching ride by data', error)
+    }
+  }
+
+  //get id with rideData
+  async getRideById(rideId: number, user: User): Promise<Ride | null> {
+    try {
+      return await prisma.ride.findFirst({
+        where: {
+          id: rideId,
+          riderId: user.firebaseUid,
         },
       })
     } catch (error) {

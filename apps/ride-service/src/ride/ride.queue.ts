@@ -14,6 +14,7 @@ export class RideQueue {
       },
     })
   }
+
   //find
   rideRequest = async (rideData: Partial<Ride>) => {
     try {

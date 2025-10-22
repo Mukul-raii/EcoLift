@@ -51,8 +51,8 @@ export class RideWorker {
               console.log('Updated Ride in rideWorker:', updateRide)
               //send notification to the driver
               await this.notificationQueue.sendNotification(
-                ride.driverId,
                 ride.riderId,
+                ride.driverId,
                 'rideRequested',
                 updateRide,
               )
@@ -95,8 +95,8 @@ export class RideWorker {
               await this.rideService.updateRideAndDriver(rideAccepted)
             //send notification to the driver
             await this.notificationQueue.sendNotification(
-              rideAccepted.driverId || '',
               rideAccepted.riderId,
+              rideAccepted.driverId || '',
               'rideRequested',
               updateRideAndDriver!,
             )
@@ -142,11 +142,7 @@ export class RideWorker {
     status: DriverStatus,
   ) {
     try {
-      const updateRide = await this.rideService.updateRideAndDriver(
-        rideData,
-        driverId,
-        status,
-      )
+      const updateRide = await this.rideService.updateRideAndDriver(rideData)
       return updateRide
     } catch (error) {
       errorLogger('Error updating ride:', error)

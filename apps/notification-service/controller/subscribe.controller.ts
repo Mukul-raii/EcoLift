@@ -18,12 +18,15 @@ export class NotificationSubscriber {
 
     // Subscribe to the same channel used by your NotificationService
     await this.client.subscribe('notifications', (rawMessage) => {
-      console.log('📩 [Subscriber Service] Message received:', rawMessage)
       const { riderId, driverId, message: msg, data } = JSON.parse(rawMessage)
-      console.log(`📩 [Subscriber Service] Received for ${driverId}: ${msg}`)
-      this.io.to(`driver:${driverId}`).emit('rideRequested', data)
-      this.io.emit('rideRequested', data)
-      this.io.to(`rider:${riderId}`).emit('rideUpdate', data)
+      console.log({ riderId, driverId, message: msg, data })
+
+      //msg is 'rideAccepted' here
+      this.io.to(`driver:${driverId}`).emit(msg, data)
+      this.io.to(`rider:${riderId}`).emit(msg, data)
+      console.log(
+        `✅ Event "${msg}" sent to BOTH driver ${driverId} and rider ${riderId}`,
+      )
 
       // Here you can call your own logic, e.g.:
       // - Send WebSocket event

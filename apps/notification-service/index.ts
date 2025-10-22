@@ -22,21 +22,32 @@ async function startServer() {
 
   // Socket.IO connection
   io.on('connection', (socket) => {
+    console.log('✅ Client connected:', socket.id)
+
     // Driver joins their room
     socket.on('joinDriverRoom', (driverId: string) => {
       socket.join(`driver:${driverId}`)
-      console.log(`Driver ${driverId} joined their room`)
+      console.log(`🚗 Driver ${driverId} joined room driver:${driverId}`)
+      socket.emit('roomJoined', {
+        room: `driver:${driverId}`,
+        userId: driverId,
+      })
     })
 
     // Rider joins their room
     socket.on('joinRiderRoom', (riderId: string) => {
       socket.join(`rider:${riderId}`)
-      console.log(`Rider ${riderId} joined their room`)
+      console.log(`🧑 Rider ${riderId} joined room rider:${riderId}`)
+      socket.emit('roomJoined', { room: `rider:${riderId}`, userId: riderId })
     })
 
     // Update ride status
     socket.on('getRideStatus', async (rideData: any) => {
       console.log('updated Ride status got from driver:', rideData)
+    })
+
+    socket.on('disconnect', () => {
+      console.log('❌ Client disconnected:', socket.id)
     })
   })
 
@@ -44,5 +55,7 @@ async function startServer() {
     console.log('Server listening on port 3000 ✅')
   })
 }
-
+io.of('/').adapter.on('join-room', (room, id) => {
+  console.log(`🔗 Socket ${id} joined room ${room}`)
+})
 startServer()

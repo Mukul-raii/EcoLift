@@ -3,34 +3,31 @@ import { RideService, startRide } from './ride.service'
 import {
   errorLogger,
   logger,
+  Ride,
+  RidePrepared,
   ServerError,
   successResponse,
 } from '@rider/shared/dist'
 import { RideQueue } from './ride.queue'
+import { RideForm } from '@rider/shared/dist'
+import { RideFormData } from '@rider/shared/dist'
 
 export class RideController {
   private rideService: RideService
   private rideQueue: RideQueue
+
   constructor() {
     this.rideService = new RideService()
     this.rideQueue = new RideQueue()
   }
+
   findRide = async (req: Request, res: Response): Promise<Response> => {
     const user = req.user
-    const { from, to, pickupLat, pickupLong, dropoffLat, dropoffLong } =
-      req.body
-    const data = {
-      from,
-      to,
-      pickupLat,
-      pickupLong,
-      dropoffLat,
-      dropoffLong,
-    }
+    const rideData: RideForm = req.body
+    console.log('ridedata --------', rideData, req.body)
 
-    console.log('findRide called with data:', data)
     try {
-      const result = await this.rideService.startRide(user, data)
+      const result: Ride = await this.rideService.startRide(user, rideData)
       logger('Ride started successfully:', result)
       return successResponse(res, 200, 'Ride started successfully', result)
     } catch (error) {
@@ -42,7 +39,7 @@ export class RideController {
   getRides = async (req: Request, res: Response): Promise<Response> => {
     const user = req.user
     try {
-      const result = await this.rideService.getRides(user)
+      const result: Ride[] = await this.rideService.getRides(user)
       logger('Rides fetched successfully:', result)
       return successResponse(res, 200, 'Rides fetched successfully', result)
     } catch (error) {
@@ -55,7 +52,7 @@ export class RideController {
     const user = req.user
     try {
       console.log('fetchLiveRides called with rideId:')
-      const result = await this.rideService.fetchLiveRides(user)
+      const result: Ride | null = await this.rideService.fetchLiveRides(user)
       logger('Live rides fetched successfully:', result)
       return successResponse(
         res,
@@ -71,11 +68,12 @@ export class RideController {
 
   requestRide = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { rideData } = req.body
-      console.log('ride addding into ride queue :', rideData)
+      const { rideData } = req.body as { rideData: Partial<Ride> }
+
+      //Request a ride to the queue
       const ride = await this.rideQueue.rideRequest(rideData)
       console.log('ride added into ride queue :', rideData)
-      return successResponse(res, 200, 'Live rides fetched successfully', {})
+      return successResponse(res, 200, 'Ride requested successfully', {})
     } catch (error) {
       errorLogger('Error fetching live rides:', error)
       throw new ServerError('Error fetching live rides', error)
@@ -84,10 +82,9 @@ export class RideController {
 
   acceptRide = async (req: Request, res: Response): Promise<Response> => {
     try {
-      console.log('acceptRide called with rideId:')
-      const { ridedata } = req.body
-      const ride = await this.rideQueue.rideAccept(ridedata)
-      return successResponse(res, 200, 'Live rides fetched successfully', {})
+      const { rideData } = req.body as { rideData: Partial<Ride> }
+      const ride = await this.rideQueue.rideAccept(rideData)
+      return successResponse(res, 200, 'Ride accepted successfully', {})
     } catch (error) {
       errorLogger('Error fetching live rides:', error)
       throw new ServerError('Error fetching live rides', error)
@@ -96,10 +93,23 @@ export class RideController {
 
   rejectRide = async (req: Request, res: Response): Promise<Response> => {
     try {
-      console.log('rejectRide called with rideId:')
-      const { ridedata } = req.body
-      const ride = await this.rideQueue.rideReject(ridedata)
-      return successResponse(res, 200, 'Live rides fetched successfully', {})
+      const { rideData } = req.body as { rideData: Partial<Ride> }
+      const ride = await this.rideQueue.rideReject(rideData)
+      return successResponse(res, 200, 'Ride Rejected successfully', {})
+    } catch (error) {
+      errorLogger('Error fetching live rides:', error)
+      throw new ServerError('Error fetching live rides', error)
+    }
+  }
+
+  getRidePrepared = async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const user = req.user
+      const { rideFormData } = req.body as { rideFormData: RideFormData }
+      const ride: RidePrepared =
+        await this.rideService.ridePrepared(rideFormData)
+
+      return successResponse(res, 200, 'Live rides fetched successfully', ride)
     } catch (error) {
       errorLogger('Error fetching live rides:', error)
       throw new ServerError('Error fetching live rides', error)

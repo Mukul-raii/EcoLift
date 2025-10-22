@@ -19,7 +19,7 @@ app.use(cookieParser())
 app.use(express.json())
 app.use(
   cors({
-    origin: ['http://localhost:8081', 'http://localhost:39015'],
+    origin: ['http://localhost:8081', 'http://localhost:38139'],
     credentials: true,
     exposedHeaders: ['Authorization'],
   }),
