@@ -121,12 +121,31 @@ export class RideController {
         rideData: Partial<Ride>
         otp: string
       }
-      console.log('OTP verification started', rideData, otp)
+      console.log('OTP verification started', rideData, otp, req.body)
       const ride = await this.rideService.verifyOTP(rideData, Number(otp))
       return successResponse(res, 200, 'Ride started successfully', {})
     } catch (error) {
       errorLogger('Error fetching live rides:', error)
       throw new ServerError('Error fetching live rides', error)
+    }
+  }
+
+  getDriverLocation = async (
+    req: Request,
+    res: Response,
+  ): Promise<Response> => {
+    try {
+      const { driverId } = req.params
+      const location = await this.rideService.getDriverLocation(driverId)
+      return successResponse(
+        res,
+        200,
+        'Driver location fetched successfully',
+        location,
+      )
+    } catch (error) {
+      errorLogger('Error fetching driver location:', error)
+      throw new ServerError('Error fetching driver location', error)
     }
   }
 }

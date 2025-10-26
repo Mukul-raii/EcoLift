@@ -12,5 +12,7 @@ router.post('/auth/verify', authController.authenticate)
 router.get('/profile', authMiddleware, userProfile.fetchDriverProfile)
 router.patch('/profile', authMiddleware, userProfile.updateDriverProfile)
 router.patch('/status', authMiddleware, userProfile.changeDriverStatus)
+router.patch('/location', authMiddleware, userProfile.updateDriverLocation)
+router.get('/live_location', authMiddleware, userProfile.fetchDriverLocation)
 
 export default router

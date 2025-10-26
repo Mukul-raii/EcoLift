@@ -58,4 +58,41 @@ export class driverProfileController {
       return errorResponse(res, 500, 'Error updating driver profile', error)
     }
   }
+
+  updateDriverLocation = async (
+    req: Request,
+    res: Response,
+  ): Promise<Response> => {
+    const user = req.user
+    console.log(user)
+    const { location } = req.body
+    const body = req.body
+    try {
+      const result = await this.driverService.updateDriverLocation(
+        user.firebaseUid,
+        location.latitude,
+        location.longitude,
+      )
+      return res.status(204).json({ message: 'Location updated' })
+    } catch (error) {
+      errorLogger(
+        'Error in driverProfileController.updateDriverLocation',
+        error,
+      )
+      return errorResponse(res, 500, 'Error updating driver location', error)
+    }
+  }
+  fetchDriverLocation = async (
+    req: Request,
+    res: Response,
+  ): Promise<Response> => {
+    const user = req.user
+    try {
+      const result = await this.driverService.fetchDriverLocation(user.id)
+      return res.status(200).json({ message: 'Location fetched', result })
+    } catch (error) {
+      errorLogger('Error in driverProfileController.fetchDriverLocation', error)
+      return errorResponse(res, 500, 'Error fetching driver location', error)
+    }
+  }
 }

@@ -18,4 +18,10 @@ router.patch('/reject-ride', authMiddleware, rideController.rejectRide)
 
 router.post('/ride-prepared', authMiddleware, rideController.getRidePrepared)
 router.patch('/start-ride', authMiddleware, rideController.startRide)
+
+router.get(
+  '/driver-location/:driverId',
+  authMiddleware,
+  rideController.getDriverLocation,
+)
 export default router

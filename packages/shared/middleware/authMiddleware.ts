@@ -20,7 +20,7 @@ export function authMiddleware(
     return errorResponse(res, 401, 'Missing authorization', 'TOKEN_MISSING')
   }
   const token = authHeader.split(' ')[1]
-
+  console.log('token ', token)
   if (!token) {
     return errorResponse(res, 401, 'Missing Token ', 'TOKEN_MISSING')
   }
@@ -33,12 +33,20 @@ export function authMiddleware(
     )
   }
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    console.log('decodeding token')
+    let decoded
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET)
+    } catch (error) {
+      console.log('error', error)
+    }
+    console.log('decoded token', decoded)
     if (!decoded) {
       console.log('Decoded token is null or undefined')
       return errorResponse(res, 401, 'Invalid Token ', 'TOKEN_EXPIRED')
     }
     req.user = decoded
+
     console.log('Authenticated user:', req.user)
     next()
   } catch (error) {

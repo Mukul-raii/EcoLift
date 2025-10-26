@@ -15,6 +15,7 @@ import { RideForm } from '@rider/shared/dist'
 import { tryCatch } from 'bullmq'
 import { NotificationService } from '../notification/notification.service'
 import { NotificationQueue } from '../notification/notification.queue'
+import redis from '@rider/shared/dist/services/redis'
 
 // export const startRide = async (
 //   from: string,
@@ -248,6 +249,19 @@ export class RideService {
     } catch (error) {
       console.error(error)
       throw new ServerError('Error creating ride', error)
+    }
+  }
+
+  async getDriverLocation(driverId: string) {
+    try {
+      const [[longitude, latitude]] = await redis.geopos(
+        'driver:location',
+        driverId.toString(),
+      )
+      return { longitude, latitude, driverId }
+    } catch (error) {
+      console.error(error)
+      throw new ServerError('Error getting driver location', error)
     }
   }
 }

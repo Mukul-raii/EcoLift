@@ -160,6 +160,7 @@ export class RideRepository {
 
   async verifyOTP(rideData: Partial<Ride>, otp: number) {
     try {
+      console.log('OTP Verification Started', rideData)
       const isVerified = await prisma.ride.findUnique({
         where: {
           id: rideData.id,
