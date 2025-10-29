@@ -1,5 +1,5 @@
 import { DriverStatus, prisma, Ride, RideStatus } from '@rider/db'
-import { DatabaseError, errorLogger, logger } from '@rider/shared/dist'
+import { DatabaseError, errorLogger, logger, findAvailableDriver } from '@rider/shared/dist'
 
 import { RideForm } from '@rider/shared/dist'
 import { resUser, User } from '@rider/shared/dist'
@@ -94,13 +94,9 @@ export class RideRepository {
   }
 
   async findAvailableDriver() {
-    // Mock function to find an available driver
+    // Use shared utility function
     try {
-      const res = await prisma.driverProfile.findFirst({
-        where: {
-          status: 'AVAILABLE',
-        },
-      })
+      const res = await findAvailableDriver()
       return res
     } catch (error) {
       errorLogger('Error finding available driver:', error)
@@ -110,7 +106,7 @@ export class RideRepository {
 
   async updateRide(updateData: Partial<Ride>): Promise<Ride> {
     try {
-      console.log('updateing ride,,,,,', updateData)
+      logger('Updating ride:', updateData)
       const result = await prisma.ride.update({
         where: { id: updateData.id },
         data: updateData,
@@ -142,14 +138,14 @@ export class RideRepository {
           },
         })
 
-        console.log('Driver and ride status updated:', {
+        logger('Driver and ride status updated:', {
           updatedDriver,
           rideUpdate,
         })
         return rideUpdate
       })
 
-      console.log('✅ Transaction committed with:', result)
+      logger('Transaction committed with:', result)
 
       return result
     } catch (error) {
@@ -160,7 +156,7 @@ export class RideRepository {
 
   async verifyOTP(rideData: Partial<Ride>, otp: number) {
     try {
-      console.log('OTP Verification Started', rideData)
+      logger('OTP Verification Started', rideData)
       const isVerified = await prisma.ride.findUnique({
         where: {
           id: rideData.id,

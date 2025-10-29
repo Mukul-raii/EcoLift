@@ -1,6 +1,7 @@
 // notification-subscriber.ts
 import { createClient, RedisClientType } from 'redis'
 import { Server } from 'socket.io'
+import { logger } from '@rider/shared'
 
 export class NotificationSubscriber {
   private client: RedisClientType
@@ -19,13 +20,13 @@ export class NotificationSubscriber {
     // Subscribe to the same channel used by your NotificationService
     await this.client.subscribe('notifications', (rawMessage) => {
       const { riderId, driverId, message: msg, data } = JSON.parse(rawMessage)
-      console.log({ riderId, driverId, message: msg, data })
+      logger({ riderId, driverId, message: msg, data })
 
       //msg is 'rideAccepted' here
       this.io.to(`driver:${driverId}`).emit(msg, data)
       this.io.to(`rider:${riderId}`).emit(msg, data)
-      console.log(
-        `✅ Event "${msg}" sent to BOTH driver ${driverId} and rider ${riderId}`,
+      logger(
+        `Event "${msg}" sent to BOTH driver ${driverId} and rider ${riderId}`,
       )
 
       // Here you can call your own logic, e.g.:

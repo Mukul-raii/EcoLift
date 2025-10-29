@@ -1,6 +1,7 @@
 import { Ride } from '@rider/db'
 import redis from '@rider/shared'
 import { Queue } from 'bullmq'
+import { logger } from '@rider/shared/dist'
 
 export class RideQueue {
   private rideQueue: Queue
@@ -18,10 +19,10 @@ export class RideQueue {
   //find
   rideRequest = async (rideData: Partial<Ride>) => {
     try {
-      console.log('ride addding into ride queue :', rideData)
+      logger('Ride adding into ride queue:', rideData)
       //find the ride requested  in the queue
       await this.rideQueue.add('ride-request', rideData)
-      console.log('ride added into ride queue :', rideData)
+      logger('Ride added into ride queue:', rideData)
 
       //notify the rider to updated the ride its been created to the queue
       //find a driver for the ride ,and request and notify the driver

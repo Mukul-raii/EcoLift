@@ -1,6 +1,7 @@
 // notification-service/index.ts
 import { Worker } from 'bullmq'
 import { NotificationService } from './notification.service'
+import { logger } from '@rider/shared/dist'
 
 export class notificationWorker {
   private notificationService: NotificationService
@@ -29,7 +30,7 @@ export class notificationWorker {
     message: string,
     data: object,
   ) => {
-    console.log(
+    logger(
       `Sending to ${riderId} and ${driverId}: ${message} with data`,
       data,
     )

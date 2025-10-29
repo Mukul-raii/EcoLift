@@ -1,19 +1,19 @@
-import { prisma } from '@rider/db'
+import { prisma, DriverProfile } from '@rider/db'
 
-export const findAvailableDriver = async (rideRequest: any) => {
-  // Mock function to find an available driver
-
-  const res = await prisma.driverProfile.findFirst({
+/**
+ * Find the first available driver in the system
+ * Drivers are ordered by creation date to ensure fair distribution
+ * @returns DriverProfile if found, null otherwise
+ */
+export const findAvailableDriver = async (): Promise<DriverProfile | null> => {
+  const driver = await prisma.driverProfile.findFirst({
     where: {
       status: 'AVAILABLE',
     },
+    orderBy: {
+      id: 'asc', // Fair driver selection based on signup order
+    },
   })
-  return res
+  return driver
 }
 
-/* export const updateDriverStatus = async (driverId: string, status: string) => {
-  await prisma.driverProfile.update({
-    where: { userId: driverId },
-    data: { status },
-  })
-} */

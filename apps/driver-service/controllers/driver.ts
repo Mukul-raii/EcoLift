@@ -64,7 +64,6 @@ export class driverProfileController {
     res: Response,
   ): Promise<Response> => {
     const user = req.user
-    console.log(user)
     const { location } = req.body
     const body = req.body
     try {
