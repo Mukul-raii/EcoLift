@@ -1,5 +1,5 @@
 import { DriverStatus, prisma, Ride, RideStatus } from '@rider/db'
-import { DatabaseError, errorLogger, logger } from '@rider/shared/dist'
+import { DatabaseError, errorLogger, logger, findAvailableDriver } from '@rider/shared/dist'
 
 import { RideForm } from '@rider/shared/dist'
 import { resUser, User } from '@rider/shared/dist'
@@ -94,13 +94,9 @@ export class RideRepository {
   }
 
   async findAvailableDriver() {
-    // Mock function to find an available driver
+    // Use shared utility function
     try {
-      const res = await prisma.driverProfile.findFirst({
-        where: {
-          status: 'AVAILABLE',
-        },
-      })
+      const res = await findAvailableDriver()
       return res
     } catch (error) {
       errorLogger('Error finding available driver:', error)
