@@ -26,10 +26,7 @@ export class RideWorker {
         switch (job.name) {
           case 'ride-request':
             try {
-              console.log(
-                'Processing ride-request job in rideWorker:',
-                job.data,
-              )
+              logger('Processing ride-request job in rideWorker:', job.data)
               const ride = await this.rideService.findRide(job.data)
               // notify the rider to updated the ride its been created to the queue'
               await this.notificationQueue.sendNotification(
@@ -38,18 +35,18 @@ export class RideWorker {
                 'rideRequested',
                 ride,
               )
-              console.log('Ride found in rideWorker:', ride)
+              logger('Ride found in rideWorker:', ride)
               let driver = await this.findDriver()
-              console.log('Driver found in rideWorker:', driver)
+              logger('Driver found in rideWorker:', driver)
               //if driver not found return with a notification to the rider notify
               if (!driver) {
                 return logger('No driver available at the moment')
               }
               ride.status = 'REQUESTED'
               ride.driverId = driver.userId
-              console.log('Driver assigned to ride:', ride, driver)
+              logger('Driver assigned to ride:', ride, driver)
               const updateRide = await this.rideService.updateRide(ride)
-              console.log('Updated Ride in rideWorker:', updateRide)
+              logger('Updated Ride in rideWorker:', updateRide)
               //send notification to the driver
               await this.notificationQueue.sendNotification(
                 ride.riderId,
@@ -57,10 +54,9 @@ export class RideWorker {
                 'rideRequested',
                 updateRide,
               )
-              console.log('Notification sent to driver in rideWorker')
+              logger('Notification sent to driver in rideWorker')
             } catch (error) {
               errorLogger('Error processing ride-request job:', error)
-              console.log('Error processing ride-request job:', error)
               throw new ServerError('Error processing ride-request job', error)
             }
             break
@@ -103,7 +99,7 @@ export class RideWorker {
               'rideRequested',
               updateRideAndDriver!,
             )
-            console.log("RIDE ACCEPTED AND DRIVER'S NOTIFIED")
+            logger("RIDE ACCEPTED AND DRIVER'S NOTIFIED")
             break
         }
       },
@@ -116,11 +112,7 @@ export class RideWorker {
     )
 
   findDriver = async () => {
-    let driver = await this.rideService.findDriver()
-    // No driver available then i want to refind the driver
-    if (!driver) {
-      driver = await this.rideService.findDriver()
-    }
+    const driver = await this.rideService.findDriver()
     return driver
   }
 

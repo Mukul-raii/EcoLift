@@ -24,7 +24,7 @@ export class RideController {
   findRide = async (req: Request, res: Response): Promise<Response> => {
     const user = req.user
     const rideData: RideForm = req.body
-    console.log('ridedata --------', rideData, req.body)
+    logger('Finding ride with data:', rideData)
 
     try {
       const result: Ride = await this.rideService.startRide(user, rideData)
@@ -51,7 +51,7 @@ export class RideController {
   fetchLiveRides = async (req: Request, res: Response): Promise<Response> => {
     const user = req.user
     try {
-      console.log('fetchLiveRides called with rideId:')
+      logger('fetchLiveRides called')
       const result: Ride | null = await this.rideService.fetchLiveRides(user)
       logger('Live rides fetched successfully:', result)
       return successResponse(
@@ -72,7 +72,7 @@ export class RideController {
 
       //Request a ride to the queue
       const ride = await this.rideQueue.rideRequest(rideData)
-      console.log('ride added into ride queue :', rideData)
+      logger('Ride added into ride queue:', rideData)
       return successResponse(res, 200, 'Ride requested successfully', {})
     } catch (error) {
       errorLogger('Error fetching live rides:', error)
@@ -121,7 +121,7 @@ export class RideController {
         rideData: Partial<Ride>
         otp: string
       }
-      console.log('OTP verification started', rideData, otp, req.body)
+      logger('OTP verification started', rideData, otp)
       const ride = await this.rideService.verifyOTP(rideData, Number(otp))
       return successResponse(res, 200, 'Ride started successfully', {})
     } catch (error) {

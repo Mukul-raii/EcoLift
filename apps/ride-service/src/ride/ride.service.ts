@@ -60,9 +60,9 @@ export class RideService {
   async startRide(user: resUser, data: RideForm) {
     //validate data
     try {
-      console.log('Starting ride with data:', 'for user:', data)
+      logger('Starting ride with data for user:', data)
       await this.validateStartRideData(user, data)
-      console.log('validated')
+      logger('validated')
 
       const ride: Ride = await this.rideRepository.createRide(
         data,
@@ -76,13 +76,13 @@ export class RideService {
 
   async fetchLiveRides(user: resUser) {
     try {
-      console.log('Fetching live rides for user:', user, 'and rideId:')
+      logger('Fetching live rides for user:', user)
       await this.validateFetchLiveRidesData(user)
-      console.log('validated')
+      logger('validated')
       const ride: Ride | null = await this.rideRepository.getRideByUserId(
         user.firebaseUid,
       )
-      console.log('Ride fetched:', ride)
+      logger('Ride fetched:', ride)
       return ride
     } catch (error) {
       throw new ServerError('Error fetching live rides', error)
@@ -205,14 +205,14 @@ export class RideService {
       })
       if (response.data && response.data.features?.length > 0) {
         // 4. FIX: Parse the response and set the state
-        var distance = response.data.features[0].properties.summary.distance
-        var duration = response.data.features[0].properties.summary.duration
+        const distance = response.data.features[0].properties.summary.distance
+        const duration = response.data.features[0].properties.summary.duration
         return { distance, duration }
       }
 
-      return { distance, duration }
+      return { distance: 0, duration: 0 }
     } catch (error) {
-      console.error(error)
+      errorLogger('Error getting distance for ride:', error)
       throw new ServerError('Error creating ride', error)
     }
   }
@@ -224,7 +224,7 @@ export class RideService {
 
   async verifyOTP(rideData: Partial<Ride>, otp: number) {
     try {
-      console.log('OTP verification started', rideData, otp)
+      logger('OTP verification started', rideData, otp)
       const isVerified = await this.rideRepository.verifyOTP(rideData, otp)
       if (!isVerified) {
         throw new Error('Invalid OTP')
@@ -247,7 +247,7 @@ export class RideService {
 
       return ride
     } catch (error) {
-      console.error(error)
+      errorLogger('Error verifying OTP:', error)
       throw new ServerError('Error creating ride', error)
     }
   }
@@ -260,7 +260,7 @@ export class RideService {
       )
       return { longitude, latitude, driverId }
     } catch (error) {
-      console.error(error)
+      errorLogger('Error getting driver location:', error)
       throw new ServerError('Error getting driver location', error)
     }
   }

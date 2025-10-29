@@ -28,7 +28,6 @@ export class RideController {
       return res.status(400).json({ message: 'User not authenticated' })
     }
     try {
-      console.log('Fetching rides for driverid:', user.firebaseId)
       const result = await this.rideService.getDriverRides(user.firebaseId)
       successResponse(res, 200, 'Rides fetched successfully', result)
     } catch (error) {

@@ -110,7 +110,7 @@ export class RideRepository {
 
   async updateRide(updateData: Partial<Ride>): Promise<Ride> {
     try {
-      console.log('updateing ride,,,,,', updateData)
+      logger('Updating ride:', updateData)
       const result = await prisma.ride.update({
         where: { id: updateData.id },
         data: updateData,
@@ -142,14 +142,14 @@ export class RideRepository {
           },
         })
 
-        console.log('Driver and ride status updated:', {
+        logger('Driver and ride status updated:', {
           updatedDriver,
           rideUpdate,
         })
         return rideUpdate
       })
 
-      console.log('✅ Transaction committed with:', result)
+      logger('Transaction committed with:', result)
 
       return result
     } catch (error) {
@@ -160,7 +160,7 @@ export class RideRepository {
 
   async verifyOTP(rideData: Partial<Ride>, otp: number) {
     try {
-      console.log('OTP Verification Started', rideData)
+      logger('OTP Verification Started', rideData)
       const isVerified = await prisma.ride.findUnique({
         where: {
           id: rideData.id,

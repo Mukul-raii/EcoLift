@@ -1,4 +1,5 @@
 import { Queue } from 'bullmq'
+import { logger } from '@rider/shared/dist'
 
 export class NotificationQueue {
   private notifyQueue: Queue
@@ -19,7 +20,7 @@ export class NotificationQueue {
     message: string,
     data: object = {},
   ) {
-    console.log('Adding notification to queue:', {
+    logger('Adding notification to queue:', {
       riderId,
       driverId,
       message,

@@ -40,6 +40,8 @@ model DriverProfile {
   status        DriverStatus @default(UNAVAILABLE)
 
   user User @relation(fields: [userId], references: [firebaseUid])
+
+  @@index([status])
 }
 
 model Ride {
@@ -61,6 +63,10 @@ model Ride {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([riderId, status])
+  @@index([driverId, status])
+  @@index([status])
 }
 
 

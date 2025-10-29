@@ -61,7 +61,7 @@ export class DriverService {
         userId.toString(),
         Date.now().toString(),
       )
-      console.log('Driver location updated successfully')
+      logger('Driver location updated successfully')
     } catch (error) {
       errorLogger('Error in DriverService.updateDriverLocation', error)
       throw new ServerError('Error updating driver location', error)

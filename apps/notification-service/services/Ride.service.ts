@@ -33,7 +33,7 @@ export class RideService {
       ride.driverId = driver.userId
       const updateRide = await this.rideRepository.updateRide(ride)
 
-      console.log('Emitting rideRequested to driver:', driver.userId)
+      logger('Emitting rideRequested to driver:', driver.userId)
       io.to(`driver:${driver.userId}`).emit('rideRequested', updateRide)
       return updateRide
     } catch (error) {
