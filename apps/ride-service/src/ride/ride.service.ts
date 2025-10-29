@@ -194,6 +194,7 @@ export class RideService {
   ) {
     try {
       const ORS_API_KEY =
+        process.env.ORS_API_KEY ||
         'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImVhNTc1NjkzOGYwYzRlOGFiYjRkNDBiYTcyZjYzMDgxIiwiaCI6Im11cm11cjY0In0='
       const baseURL = `https://api.openrouteservice.org/v2/directions/driving-car`
       const response = await axios.get(baseURL, {
