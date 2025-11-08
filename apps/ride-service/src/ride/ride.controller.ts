@@ -11,14 +11,18 @@ import {
 import { RideQueue } from './ride.queue'
 import { RideForm } from '@rider/shared/dist'
 import { RideFormData } from '@rider/shared/dist'
+import { tryCatch } from 'bullmq'
+import { NotificationQueue } from '../notification/notification.queue'
 
 export class RideController {
   private rideService: RideService
   private rideQueue: RideQueue
+  private notificationQueue: NotificationQueue
 
   constructor() {
     this.rideService = new RideService()
     this.rideQueue = new RideQueue()
+    this.notificationQueue = new NotificationQueue()
   }
 
   findRide = async (req: Request, res: Response): Promise<Response> => {
@@ -127,6 +131,27 @@ export class RideController {
     } catch (error) {
       errorLogger('Error fetching live rides:', error)
       throw new ServerError('Error fetching live rides', error)
+    }
+  }
+
+  endRide = async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const { rideData } = req.body as {
+        rideData: Partial<Ride>
+      }
+      const user = req.user
+      const ride = await this.rideService.endRide(rideData, user)
+      console.log('Ride ended successfully:', ride)
+      this.notificationQueue.sendNotification(
+        ride.riderId,
+        ride.driverId,
+        'ride_completed',
+        { message: 'Your ride has been completed successfully.' },
+      )
+      return successResponse(res, 200, 'Ride started successfully', {})
+    } catch (error) {
+      errorLogger('Error ending ride:', error)
+      throw new ServerError('Error ending ride', error)
     }
   }
 

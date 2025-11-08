@@ -2,8 +2,8 @@ import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import 'dotenv/config'
-import userAuth from './routes/user'
-import driverRides from './routes/rides'
+import userAuth from './routes/user.route'
+import driverRides from './routes/ride.route'
 
 const app = express()
 app.get('/ping', (req, res) => res.json({ msg: 'pong' }))

@@ -3,6 +3,7 @@ import { errorLogger, ServerError } from '@rider/shared/dist'
 
 export class RideService {
   private rideRepository: RideRepository
+
   constructor() {
     this.rideRepository = new RideRepository()
   }
@@ -16,6 +17,7 @@ export class RideService {
       throw new ServerError('Failed to fetch live ride')
     }
   }
+
   getDriverRides = async (driverId: string) => {
     try {
       const result = await this.rideRepository.findDriverRides(driverId)

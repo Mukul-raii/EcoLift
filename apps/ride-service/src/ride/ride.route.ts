@@ -18,6 +18,7 @@ router.patch('/reject-ride', authMiddleware, rideController.rejectRide)
 
 router.post('/ride-prepared', authMiddleware, rideController.getRidePrepared)
 router.patch('/start-ride', authMiddleware, rideController.startRide)
+router.patch('/end-ride', authMiddleware, rideController.endRide)
 
 router.get(
   '/driver-location/:driverId',

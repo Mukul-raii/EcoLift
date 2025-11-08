@@ -1,9 +1,16 @@
 import { Request, Response } from 'express'
 import { getDriverRides, RideService } from '../services/ride.service'
-import { errorLogger, errorResponse, successResponse } from '@rider/shared/dist'
+import {
+  AuthenticationError,
+  errorLogger,
+  errorResponse,
+  successResponse,
+} from '@rider/shared/dist'
+import { updateRideStatusType } from '../types/ride/ride.request.type'
 
 export class RideController {
   private rideService: RideService
+
   constructor() {
     this.rideService = new RideService()
   }
@@ -11,7 +18,7 @@ export class RideController {
   getDriverLiveRide = async (req: Request, res: Response) => {
     const user = req.user
     if (!user) {
-      return res.status(400).json({ message: 'User not authenticated' })
+      throw new AuthenticationError('User not authenticated')
     }
     try {
       const result = await this.rideService.getDriverLiveRide(user.id)
@@ -25,10 +32,9 @@ export class RideController {
   getdriverRides = async (req: Request, res: Response) => {
     const user = req.user
     if (!user) {
-      return res.status(400).json({ message: 'User not authenticated' })
+      throw new AuthenticationError('User not authenticated')
     }
     try {
-      console.log('Fetching rides for driverid:', user.firebaseId)
       const result = await this.rideService.getDriverRides(user.firebaseId)
       successResponse(res, 200, 'Rides fetched successfully', result)
     } catch (error) {
@@ -39,7 +45,8 @@ export class RideController {
 
   updateRideStatus = async (req: Request, res: Response) => {
     const user = req.user
-    const { id, status } = req.body
+    const { id, status }: updateRideStatusType = req.body
+
     try {
       const result = await this.rideService.updateRideStatus(
         user.firebaseId,

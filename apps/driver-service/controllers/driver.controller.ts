@@ -1,23 +1,34 @@
 import { Request, Response } from 'express'
 import { DriverService } from '../services/driver.service'
-import { errorLogger, errorResponse, ServerError } from '@rider/shared/dist'
+import {
+  AuthenticationError,
+  errorLogger,
+  errorResponse,
+  ServerError,
+  successResponse,
+} from '@rider/shared/dist'
 
 export class driverProfileController {
   private driverService: DriverService
+
   constructor() {
     this.driverService = new DriverService()
   }
+
   // get driver profile
   fetchDriverProfile = async (
     req: Request,
     res: Response,
   ): Promise<Response> => {
     const user = req.user
+    if (!user) {
+      throw new AuthenticationError('User not authenticated')
+    }
     try {
       const result = await this.driverService.fetchDriverProfile(
         user.firebaseUid,
       )
-      return res.status(200).json({ profile: result })
+      return successResponse(res, 200, 'Driver profile fetched', result)
     } catch (error) {
       errorLogger('Error in driverProfileController.fetchDriverProfile', error)
       return errorResponse(res, 500, 'Error fetching driver profile', error)
@@ -35,7 +46,7 @@ export class driverProfileController {
         user.id,
         status as 'active' | 'inactive',
       )
-      return res.status(200).json({ message: 'Status updated', result })
+      return successResponse(res, 200, 'Driver status updated', result)
     } catch (error) {
       return errorResponse(res, 500, 'Error updating driver status', error)
     }
@@ -52,7 +63,7 @@ export class driverProfileController {
         user.firebaseUid,
         updateData,
       )
-      return res.status(200).json({ message: 'Profile updated', result })
+      return successResponse(res, 200, 'Driver profile updated', result)
     } catch (error) {
       errorLogger('Error in driverProfileController.updateDriverProfile', error)
       return errorResponse(res, 500, 'Error updating driver profile', error)
@@ -64,16 +75,15 @@ export class driverProfileController {
     res: Response,
   ): Promise<Response> => {
     const user = req.user
-    console.log(user)
     const { location } = req.body
-    const body = req.body
+
     try {
       const result = await this.driverService.updateDriverLocation(
         user.firebaseUid,
         location.latitude,
         location.longitude,
       )
-      return res.status(204).json({ message: 'Location updated' })
+      return successResponse(res, 200, 'Driver location updated', result)
     } catch (error) {
       errorLogger(
         'Error in driverProfileController.updateDriverLocation',
@@ -89,7 +99,8 @@ export class driverProfileController {
     const user = req.user
     try {
       const result = await this.driverService.fetchDriverLocation(user.id)
-      return res.status(200).json({ message: 'Location fetched', result })
+      console.log('Fetched driver location:', result)
+      return successResponse(res, 200, 'Driver location fetched', result)
     } catch (error) {
       errorLogger('Error in driverProfileController.fetchDriverLocation', error)
       return errorResponse(res, 500, 'Error fetching driver location', error)

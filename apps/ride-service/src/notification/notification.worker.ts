@@ -4,9 +4,11 @@ import { NotificationService } from './notification.service'
 
 export class notificationWorker {
   private notificationService: NotificationService
+
   constructor() {
     this.notificationService = new NotificationService()
   }
+
   sendNotificationWorker = () =>
     new Worker(
       'notifications',

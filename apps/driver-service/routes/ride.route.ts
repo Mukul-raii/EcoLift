@@ -15,4 +15,5 @@ router.patch(
   authMiddleware,
   driverController.updateRideStatus,
 )
+
 export default router

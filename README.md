@@ -30,12 +30,14 @@ EcoLift is a ride-sharing platform built with a modern microservices architectur
 ## ✨ Features
 
 ### For Riders
+
 - 🔍 Find nearby drivers
 - 📍 Real-time ride tracking
 - 🔔 Live notifications for ride updates
 - 📊 View ride history
 
 ### For Drivers
+
 - 🚗 Receive live ride requests
 - ✅ Accept/reject rides
 - 📱 Update availability status
@@ -56,13 +58,13 @@ EcoLift uses a **microservices architecture**:
 
 ### Core Services
 
-| Service | Port | Description |
-|---------|------|-------------|
-| **API Gateway** | 4000 | Routes requests to appropriate services |
-| **Ride Service** | 8002 | Manages ride lifecycle and matching |
-| **Driver Service** | 8003 | Handles driver profiles and availability |
-| **Notification Service** | 3000 | Real-time notifications via Socket.IO |
-| **Admin Service** | 4001 | Administrative operations |
+| Service                  | Port | Description                              |
+| ------------------------ | ---- | ---------------------------------------- |
+| **API Gateway**          | 4000 | Routes requests to appropriate services  |
+| **Ride Service**         | 8002 | Manages ride lifecycle and matching      |
+| **Driver Service**       | 8003 | Handles driver profiles and availability |
+| **Notification Service** | 3000 | Real-time notifications via Socket.IO    |
+| **Admin Service**        | 4001 | Administrative operations                |
 
 ### Shared Packages
 
@@ -132,6 +134,7 @@ npm run dev
 ```
 
 Services will be available at:
+
 - API Gateway: http://localhost:4000
 - Ride Service: http://localhost:8002
 - Driver Service: http://localhost:8003
@@ -185,6 +188,7 @@ npm run db:studio      # Open Prisma Studio
 ### Key Files & Flow
 
 **Ride Request Flow:**
+
 1. Rider creates ride request → Ride Service
 2. Ride saved with `PENDING` status
 3. Ride added to Redis queue (BullMQ)
@@ -195,6 +199,7 @@ npm run db:studio      # Open Prisma Studio
 8. Driver completes ride → Status: `COMPLETED`
 
 **Important Files:**
+
 - `apps/ride-service/src/ride/` - Ride management logic
 - `apps/driver-service/controllers/` - Driver operations
 - `apps/notification-service/` - Real-time notifications

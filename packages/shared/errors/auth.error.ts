@@ -9,11 +9,7 @@ export class DatabaseError extends Error {
 }
 
 export class AuthenticationError extends Error {
-  constructor(
-    message: string,
-    public code: string,
-    public statusCode: number,
-  ) {
+  constructor(message: string, statusCode: number = 401) {
     super(message)
     this.name = 'Authentication Error'
   }
@@ -32,5 +28,16 @@ export class ValidationError extends Error {
   constructor(message: string) {
     super(message)
     this.name = 'Validation Error'
+  }
+}
+
+export class ServiceError extends Error {
+  constructor(
+    message: string,
+    public serviceName: string,
+    public originalError?: unknown,
+  ) {
+    super(message)
+    this.name = 'Service Error'
   }
 }

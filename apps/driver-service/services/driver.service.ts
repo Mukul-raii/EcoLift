@@ -44,6 +44,7 @@ export class DriverService {
       throw new ServerError('Error updating driver profile', error)
     }
   }
+
   async updateDriverLocation(
     userId: number,
     latitude: number,
@@ -61,7 +62,12 @@ export class DriverService {
         userId.toString(),
         Date.now().toString(),
       )
-      console.log('Driver location updated successfully')
+      console.log(
+        'Driver location updated successfully',
+        latitude,
+        longitude,
+        userId,
+      )
     } catch (error) {
       errorLogger('Error in DriverService.updateDriverLocation', error)
       throw new ServerError('Error updating driver location', error)

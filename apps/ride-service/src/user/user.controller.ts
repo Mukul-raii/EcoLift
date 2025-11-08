@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
-import { successResponse } from '@rider/shared/dist'
+import { errorResponse, successResponse } from '@rider/shared/dist'
 import { userService } from './User.service'
+import { tryCatch } from 'bullmq'
 
 export class userProfile {
   private userService: userService
@@ -11,22 +12,38 @@ export class userProfile {
 
   getUserProfile = async (req: Request, res: Response): Promise<Response> => {
     const user = req.user
-    const result = await this.userService.getUserProfile(user.firebaseUid)
-    console.log('Profile fetched:', result)
-    return successResponse(res, 200, 'Profile Fetched Successfull', result)
+    try {
+      const result = await this.userService.getUserProfile(user.firebaseUid)
+      return successResponse(res, 200, 'Profile Fetched Successfull', result)
+    } catch (error) {
+      return errorResponse(
+        res,
+        500,
+        '[User Controller]- Internal Server Error',
+        error,
+      )
+    }
   }
 
   updateUserProfile = async (
     req: Request,
     res: Response,
   ): Promise<Response> => {
-    const user = req.user
-    const updateData = req.body
-    const result = await this.userService.updateUserProfile(
-      user.firebaseUid,
-      updateData,
-    )
-    console.log('Profile updated:', result)
-    return successResponse(res, 200, 'Profile Updated Successfully', result)
+    try {
+      const user = req.user
+      const updateData = req.body
+      const result = await this.userService.updateUserProfile(
+        user.firebaseUid,
+        updateData,
+      )
+      return successResponse(res, 200, 'Profile Updated Successfully', result)
+    } catch (error) {
+      return errorResponse(
+        res,
+        500,
+        '[User Controller]- Internal Server Error',
+        error,
+      )
+    }
   }
 }

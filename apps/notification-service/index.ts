@@ -27,7 +27,6 @@ async function startServer() {
     // Driver joins their room
     socket.on('joinDriverRoom', (driverId: string) => {
       socket.join(`driver:${driverId}`)
-      console.log(`🚗 Driver ${driverId} joined room driver:${driverId}`)
       socket.emit('roomJoined', {
         room: `driver:${driverId}`,
         userId: driverId,
@@ -37,7 +36,6 @@ async function startServer() {
     // Rider joins their room
     socket.on('joinRiderRoom', (riderId: string) => {
       socket.join(`rider:${riderId}`)
-      console.log(`🧑 Rider ${riderId} joined room rider:${riderId}`)
       socket.emit('roomJoined', { room: `rider:${riderId}`, userId: riderId })
     })
 

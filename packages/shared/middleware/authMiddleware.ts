@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 import { errorResponse } from '../utils/respose'
+import { AuthenticationError, ServerError } from '../errors/auth.error'
+import { TaskChooseOrganization } from '@clerk/clerk-react'
 
 declare global {
   namespace Express {
@@ -17,39 +19,30 @@ export function authMiddleware(
 ) {
   const authHeader = req.headers['authorization'] // or req.get("Authorization")
   if (!authHeader) {
-    return errorResponse(res, 401, 'Missing authorization', 'TOKEN_MISSING')
+    throw new AuthenticationError('Authorization header missing', 401)
   }
   const token = authHeader.split(' ')[1]
-  console.log('token ', token)
   if (!token) {
-    return errorResponse(res, 401, 'Missing Token ', 'TOKEN_MISSING')
+    throw new AuthenticationError('Token missing', 401)
   }
   if (!process.env.JWT_SECRET) {
-    return errorResponse(
-      res,
-      500,
-      'Internal Server Error Security Token Not Found',
-      'SERVER_ERROR',
-    )
+    throw new ServerError('JWT_SECRET is not defined in environment variables')
   }
   try {
-    console.log('decodeding token')
     let decoded
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET)
     } catch (error) {
-      console.log('error', error)
+      throw new AuthenticationError('Invalid or expired token', 401)
     }
-    console.log('decoded token', decoded)
     if (!decoded) {
-      console.log('Decoded token is null or undefined')
+      throw new AuthenticationError('Invalid token', 401)
       return errorResponse(res, 401, 'Invalid Token ', 'TOKEN_EXPIRED')
     }
     req.user = decoded
 
-    console.log('Authenticated user:', req.user)
     next()
   } catch (error) {
-    return errorResponse(res, 500, 'Internal server error', 'SERVER_ERROR')
+    return errorResponse(res, 500, 'Internal server error', error)
   }
 }

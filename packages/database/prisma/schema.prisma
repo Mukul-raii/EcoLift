@@ -18,8 +18,8 @@ model User {
   id          Int       @id @default(autoincrement())
   firebaseUid String    @unique
   name        String
-  email       String    
-  phone       String?   
+  email       String
+  phone       String?
   role        Role      @default(RIDER)
 
   driverProfile DriverProfile?
@@ -28,7 +28,7 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  lastLogin DateTime 
+  lastLogin DateTime
 }
 
 model DriverProfile {
@@ -55,6 +55,9 @@ model Ride {
   dropOffLat  Float?
   dropOffLong Float?
   otp        String? // can be null when ride is completed or cancelled
+  price    Float?
+  timeDroppedOff DateTime?
+  distanceInKm Float?
 
   rider  User @relation("RiderRides", fields: [riderId], references: [firebaseUid])
   driver User? @relation("DriverRides", fields: [driverId], references: [firebaseUid])

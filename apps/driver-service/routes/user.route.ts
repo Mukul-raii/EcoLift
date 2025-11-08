@@ -1,7 +1,6 @@
 import { AuthController, authenticate, authMiddleware } from '@rider/shared'
 import { Router } from 'express'
-import { driverProfileController } from '../controllers/driver'
-import { driverRides } from '../controllers/ride.controller'
+import { driverProfileController } from '../controllers/driver.controller'
 
 const router = Router()
 

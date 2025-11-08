@@ -7,8 +7,11 @@ const serviceAccountCred = {
   private_key: serviceAccount.private_key.replace(/\\n/g, '\n'),
 } as ServiceAccount
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccountCred),
-})
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccountCred),
+  })
+  2
+}
 
 export const auth = admin.auth() // ✅ this is the correct auth instance

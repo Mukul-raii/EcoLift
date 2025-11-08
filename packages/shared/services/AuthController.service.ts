@@ -55,11 +55,7 @@ export class AuthenticationService {
   validateInput(idToken: string, requestPath: string): void {
     if (!idToken || idToken.trim() === '') {
       errorLogger('No Id Token Provided')
-      throw new AuthenticationError(
-        'Valid Id Token is required',
-        AUTH_ERRORS.NO_TOKEN,
-        400,
-      )
+      throw new AuthenticationError('Valid Id Token is required', 400)
     }
     console.log(requestPath)
     if (!(requestPath in ROLE_MAPPINGS)) {
@@ -73,20 +69,12 @@ export class AuthenticationService {
       const decoded = await auth.verifyIdToken(idToken)
       if (!decoded.uid) {
         errorLogger('Invalid Firebase token Error ')
-        throw new AuthenticationError(
-          'Invalid Firebase token Error ',
-          AUTH_ERRORS.FIREBASE_ERROR,
-          401,
-        )
+        throw new AuthenticationError('Invalid Firebase token Error ', 401)
       }
       return decoded as DecodedIdToken
     } catch (error) {
       errorLogger('Error Verifying Firebase Id Token', error)
-      throw new AuthenticationError(
-        'Invalid Firebase Id Token',
-        AUTH_ERRORS.FIREBASE_ERROR,
-        400,
-      )
+      throw new AuthenticationError('Invalid Firebase Id Token', 400)
     }
   }
 

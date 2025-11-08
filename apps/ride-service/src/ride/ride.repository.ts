@@ -173,4 +173,32 @@ export class RideRepository {
       throw new DatabaseError('Error verifying OTP', error)
     }
   }
+
+  async endRide(rideData: Partial<Ride>, userId: string) {
+    try {
+      console.log('Ending ride', rideData, userId)
+
+      const endedRide = await prisma.$transaction(async (tx) => {
+        const rideUpdate = await tx.ride.update({
+          where: { id: rideData.id, driverId: userId },
+          data: {
+            status: RideStatus.COMPLETED,
+          },
+        })
+        const updatedDriver = await tx.driverProfile.updateMany({
+          where: { userId: rideData.driverId! },
+          data: { status: DriverStatus.AVAILABLE },
+        })
+        console.log('Ride ended and driver status updated:', {
+          rideUpdate,
+          updatedDriver,
+        })
+        return rideUpdate
+      })
+      return endedRide
+    } catch (error) {
+      errorLogger('Error ending ride:', error)
+      throw new DatabaseError('Error ending ride', error)
+    }
+  }
 }

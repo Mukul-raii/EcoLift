@@ -1,6 +1,7 @@
 import { prisma, User } from '@rider/db'
 import { errorLogger, errorResponse, ServerError } from '@rider/shared/dist'
 import { UserRepository } from './user.repository'
+import { ServiceError } from '@rider/shared/index'
 
 export class userService {
   //Private property to hold instance of UserRepository
@@ -17,7 +18,11 @@ export class userService {
       return user
     } catch (error) {
       errorLogger('Error fetching user profile', { error })
-      throw new ServerError('Error fetching user profile', error)
+      throw new ServiceError(
+        'Error fetching user profile',
+        'getUserProfile',
+        error,
+      )
     }
   }
 
@@ -33,7 +38,11 @@ export class userService {
       return updatedUser
     } catch (error) {
       errorLogger('Error updating user profile', { error })
-      throw new ServerError('Error updating user profile', error)
+      throw new ServiceError(
+        'Error updating user profile',
+        'updateUserProfile',
+        error,
+      )
     }
   }
 }
